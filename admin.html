@@ -218,6 +218,127 @@
             .stats-grid { gap: .5rem; }
         }
     </style>
+
+<style>
+/* ══ ADMIN MOBILE OVERRIDES (final) ══ */
+
+/* ── NAV ── */
+@media (max-width: 768px) {
+    .admin-nav         { padding: .7rem 1rem; gap: .5rem; }
+    .nav-brand         { font-size: .88rem; }
+    .nav-brand small   { font-size: .54rem; letter-spacing: .14em; }
+    .btn-refresh       { padding: .38rem .6rem; font-size: .7rem; }
+    .btn-logout        { padding: .38rem .6rem; font-size: .7rem; }
+
+    /* ── TABS ── */
+    .main-tabs         { overflow-x: auto; display: flex; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+    .main-tabs::-webkit-scrollbar { display: none; }
+    .main-tab          { padding: .8rem .8rem; font-size: .72rem; white-space: nowrap; flex-shrink: 0; border-bottom-width: 2px; }
+
+    /* ── CONTAINER ── */
+    .admin-container   { padding: .85rem; }
+
+    /* ── STATS ── */
+    .stats-grid        { grid-template-columns: repeat(2, 1fr); gap: .6rem; margin-bottom: 1rem; }
+    .stat-card         { padding: .9rem .85rem; border-radius: 8px; }
+    .stat-value        { font-size: 1.75rem; }
+    .stat-label        { font-size: .57rem; }
+
+    /* ── RESTAURANT TABS ── */
+    .resto-tabs        { overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; -webkit-overflow-scrolling: touch; gap: .4rem; margin-bottom: .75rem; padding-bottom: 2px; }
+    .resto-tabs::-webkit-scrollbar { display: none; }
+    .resto-tab         { padding: .38rem .8rem; font-size: .72rem; flex-shrink: 0; }
+
+    /* ── TOOLBAR (search + filters) ── */
+    .toolbar           { flex-direction: column; align-items: stretch; gap: .6rem; padding: .85rem 1rem; border-radius: 8px; }
+    .search-input      { width: 100%; font-size: 1rem; padding: .72rem .9rem; border-radius: 6px; min-height: 46px; }
+    .filter-group      { width: 100%; flex-direction: column; align-items: flex-start; gap: .25rem; }
+    .filter-group label { font-size: .65rem; }
+    .toolbar input[type=date],
+    .toolbar select    { width: 100%; font-size: 1rem; padding: .65rem .85rem; min-height: 46px; border-radius: 6px; }
+    .btn-clear,
+    .btn-export        { width: 100%; min-height: 44px; font-size: .82rem; border-radius: 6px; text-align: center; }
+
+    /* ── CALENDAR ── */
+    .cal-wrapper       { border-radius: 10px; }
+    .cal-nav           { padding: .7rem .9rem; gap: .45rem; }
+    .cal-title         { font-size: .88rem; }
+    .cal-nav-btn       { width: 32px; height: 32px; font-size: .78rem; border-radius: 6px; }
+    .cal-today-btn     { font-size: .68rem; padding: .28rem .6rem; border-radius: 5px; }
+    .cal-cell          { min-height: 54px; padding: .28rem .15rem; gap: 2px; }
+    .cal-num           { width: 25px; height: 25px; font-size: .76rem; }
+    .cal-count         { font-size: .56rem; }
+    .cal-dow           { font-size: .56rem; padding: .45rem 0; letter-spacing: 0; }
+    .cal-dot           { width: 5px; height: 5px; }
+    .closed-badge      { font-size: .5rem; }
+
+    /* ── DAY PANEL ── */
+    .day-panel-header  { flex-wrap: wrap; gap: .5rem; padding: .85rem 1rem; }
+    .day-panel-title   { font-size: .92rem; }
+    .day-panel-count   { font-size: .65rem; }
+    .btn-close-day,
+    .btn-open-day      { font-size: .72rem; padding: .35rem .75rem; min-height: 36px; }
+    .res-card          { flex-direction: column; gap: .4rem; padding: .85rem 1rem; }
+    .res-time          { font-size: .92rem; min-width: auto; }
+    .res-name          { font-size: .85rem; }
+    .res-meta          { font-size: .75rem; }
+    .res-actions       { flex-wrap: wrap; gap: .3rem; margin-top: .4rem; }
+
+    /* ── ACTION BUTTONS ── */
+    .action-btn        { font-size: .7rem; padding: .35rem .65rem; min-height: 38px; border-radius: 5px; }
+    .btn-wa            { font-size: .7rem; }
+
+    /* ── TABLE → CARDS ── */
+    table              { border-collapse: collapse; width: 100%; }
+    thead              { display: none; }
+    tr                 { display: block; background: white; border-radius: 10px; margin-bottom: .75rem; border: none; box-shadow: 0 1px 3px rgba(0,0,0,.08); overflow: hidden; }
+    tr:hover td        { background: transparent; }
+    td                 { display: flex; align-items: flex-start; gap: .5rem; padding: .55rem 1rem; border-bottom: 1px solid #F5F2EE; font-size: .84rem; }
+    td:last-child      { border-bottom: none; }
+    td::before         { content: attr(data-label); font-size: .6rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); min-width: 72px; flex-shrink: 0; padding-top: 2px; font-weight: 500; }
+
+    /* ── STATS TAB ── */
+    .charts-grid       { grid-template-columns: 1fr; gap: 1rem; }
+    .chart-card        { padding: 1.1rem 1rem; border-radius: 10px; }
+    .chart-title       { font-size: .88rem; margin-bottom: 1rem; }
+    .chart-canvas      { max-height: 220px; }
+
+    /* ── RECORDATORIOS ── */
+    .rec-card          { flex-direction: column; gap: .5rem; padding: .85rem 1rem; border-radius: 10px; }
+    .rec-time          { font-size: 1rem; min-width: auto; }
+    .rec-name          { font-size: .88rem; }
+    .rec-meta          { font-size: .76rem; }
+    .rec-actions       { width: 100%; }
+    .rec-actions .action-btn { width: 100%; justify-content: center; min-height: 42px; }
+    .rec-date-header   { font-size: 1rem; }
+
+    /* ── TABLE HEADER ── */
+    .table-card        { border-radius: 10px; }
+    .table-header      { padding: .85rem 1rem; }
+    .table-title       { font-size: .92rem; }
+
+    /* ── LOGIN ── */
+    .login-box         { padding: 2rem 1.25rem; margin: 1rem; border-radius: 12px; max-width: 360px; }
+    .login-box h1      { font-size: 1.35rem; }
+    .login-box input   { font-size: 1rem; padding: .8rem 1rem; min-height: 48px; }
+    .login-btn         { min-height: 48px; font-size: .82rem; }
+
+    /* NOTE CELL */
+    .note-input        { width: 100%; max-width: 100%; font-size: .84rem; }
+    .note-cell         { font-size: .8rem; max-width: 100%; }
+}
+
+@media (max-width: 420px) {
+    .main-tab          { padding: .72rem .65rem; font-size: .68rem; }
+    .cal-cell          { min-height: 46px; }
+    .cal-num           { width: 22px; height: 22px; font-size: .7rem; }
+    .cal-dots          { display: none; }
+    .stats-grid        { gap: .5rem; }
+    .stat-value        { font-size: 1.6rem; }
+    td                 { padding: .5rem .85rem; }
+    td::before         { min-width: 64px; font-size: .58rem; }
+}
+</style>
 </head>
 <body>
 

@@ -188,6 +188,84 @@
             .field textarea { font-size: 1rem; }
         }
     </style>
+
+<style>
+/* ══ WHITE TEXT + MOBILE OVERRIDES (final) ══ */
+
+/* ── ALL TEXT PURE WHITE ── */
+body { color: #FFFFFF; }
+.section-title    { color: #FFFFFF !important; font-size: 1.2rem !important; font-weight: 400 !important; opacity: 1 !important; }
+.header-eyebrow   { color: var(--neon) !important; opacity: 1 !important; font-size: .72rem !important; }
+.header-sub       { color: rgba(255,255,255,.78) !important; font-size: .92rem !important; }
+.back-link        { color: rgba(255,255,255,.78) !important; font-size: .8rem !important; }
+.lang-btn         { color: var(--neon) !important; background: rgba(255,255,255,.06) !important; }
+.field label      { color: var(--neon) !important; opacity: 1 !important; font-size: .75rem !important; font-weight: 600 !important; letter-spacing: .13em !important; margin-bottom: .5rem !important; }
+.field input,
+.field select,
+.field textarea   { color: #FFFFFF !important; font-size: 1rem !important; background: rgba(255,255,255,.07) !important; border-color: rgba(255,255,255,.18) !important; }
+.field input:focus,
+.field select:focus,
+.field textarea:focus { border-color: var(--neon) !important; background: rgba(255,255,255,.1) !important; box-shadow: 0 0 0 2px rgba(255,255,255,.08) !important; }
+.field input::placeholder,
+.field textarea::placeholder { color: rgba(255,255,255,.88) !important; }
+.field select option { background: #0D0D1A !important; color: #FFFFFF !important; }
+.guests-hint      { color: rgba(255,255,255,.72) !important; font-size: .8rem !important; }
+.rgpd-field span  { color: rgba(255,255,255,.82) !important; font-size: .84rem !important; }
+.rgpd-field a     { color: var(--neon) !important; }
+.header-sub       { color: rgba(255,255,255,.75) !important; }
+.success-card p   { color: rgba(255,255,255,.78) !important; }
+.success-detail   { color: rgba(255,255,255,.88) !important; }
+.location-label   { color: var(--neon) !important; opacity: 1 !important; }
+.location-address { color: #FFFFFF !important; }
+.location-city    { color: rgba(255,255,255,.72) !important; }
+.footer-phone     { color: rgba(255,255,255,.72) !important; }
+.social-links a   { color: rgba(255,255,255,.65) !important; }
+.capacity-warning { color: #FFB066 !important; font-size: .84rem !important; }
+.new-reservation-btn { color: var(--neon) !important; border-color: var(--neon) !important; }
+
+/* ── MOBILE LAYOUT ── */
+@media (max-width: 640px) {
+    .header            { padding: 0 1rem 2.5rem !important; }
+    .header-top        { padding-top: 0 !important; }
+    .back-link         { padding: .7rem 1rem !important; border-bottom: 1px solid rgba(255,255,255,.06) !important; }
+    .lang-btn          { top: .85rem !important; right: .85rem !important; font-size: .72rem !important; padding: .38rem .65rem !important; }
+    .header h1         { font-size: 2.1rem !important; margin-top: 1.5rem !important; }
+    .header-eyebrow    { padding-top: 1.75rem !important; }
+    .divider           { margin: 1rem auto !important; }
+    .container         { padding: 1.75rem 1rem 3rem !important; }
+    .section-title     { font-size: 1.1rem !important; margin-bottom: 1.5rem !important; }
+    .form-grid         { gap: 1.15rem !important; }
+    .form-row          { grid-template-columns: 1fr !important; gap: .9rem !important; }
+    .field label       { font-size: .73rem !important; margin-bottom: .45rem !important; }
+    .field input,
+    .field select,
+    .field textarea    { font-size: 1rem !important; padding: .88rem 1rem !important; border-radius: 8px !important; min-height: 52px !important; }
+    .field textarea    { min-height: 88px !important; }
+    .guests-hint       { font-size: .78rem !important; margin-top: .35rem !important; }
+    .rgpd-field        { gap: .65rem !important; align-items: flex-start !important; }
+    .rgpd-field input[type=checkbox] { width: 20px !important; height: 20px !important; flex-shrink: 0 !important; margin-top: 1px !important; }
+    .submit-btn        { min-height: 56px !important; font-size: .9rem !important; border-radius: 10px !important; margin-top: .85rem !important; letter-spacing: .1em !important; }
+    .new-reservation-btn { min-height: 50px !important; width: 100% !important; border-radius: 8px !important; font-size: .82rem !important; }
+    .success-card      { padding: 2.25rem 1.25rem !important; border-radius: 14px !important; }
+    .success-icon      { width: 54px !important; height: 54px !important; font-size: 1.4rem !important; }
+    .location-container { padding: 1.75rem 1rem !important; }
+    .location-label    { font-size: .7rem !important; }
+    .location-address  { font-size: 1.05rem !important; }
+    .maps-link         { font-size: .84rem !important; min-height: 46px !important; border-radius: 8px !important; }
+    .location-map iframe { height: 200px !important; border-radius: 10px !important; }
+    .footer            { padding: 1.5rem 1rem !important; }
+    .footer-phone      { font-size: .84rem !important; margin-bottom: .9rem !important; }
+    .social-links      { gap: .75rem !important; flex-wrap: wrap !important; justify-content: center !important; }
+    .social-links a    { font-size: .8rem !important; }
+    .social-icon       { width: 30px !important; height: 30px !important; }
+    .toast             { width: 90% !important; text-align: center !important; white-space: normal !important; font-size: .84rem !important; }
+}
+
+@media (max-width: 380px) {
+    .header h1         { font-size: 1.85rem !important; }
+    .submit-btn        { font-size: .84rem !important; }
+}
+</style>
 </head>
 <body>
 <header class="header">
@@ -293,7 +371,7 @@
     /* ── FLATPICKR ── */
     var closedDates = [];
     var fpInstance = flatpickr('#date', {
-        locale: 'es', minDate: 'today', dateFormat: 'Y-m-d', disableMobile: false,
+        locale: 'es', minDate: 'today', dateFormat: 'Y-m-d', disableMobile: true,
         disable: [function(date) {
             var ds = date.getFullYear() + '-' + String(date.getMonth()+1).padStart(2,'0') + '-' + String(date.getDate()).padStart(2,'0');
             return CLOSED_WEEKDAYS.indexOf(date.getDay()) > -1 || closedDates.indexOf(ds) > -1;
