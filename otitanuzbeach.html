@@ -105,6 +105,88 @@
             .location-container { padding:1.5rem 1rem; } .location-map iframe { height:180px; }
         }
         @media (max-width:380px) { .form-row { grid-template-columns:1fr; } .header h1 { font-size:1.8rem; } }
+
+        /* ══ READABILITY + MOBILE POLISH ══ */
+
+        /* Brighter text throughout */
+        :root { --muted-bright: rgba(240,237,232,.72); }
+
+        .back-link   { color: rgba(240,237,232,.72); }
+        .header-sub  { color: rgba(240,237,232,.68); font-size: .9rem; }
+        .section-title { color: #ffffff; opacity: 1; font-size: 1.25rem; }
+        .header-eyebrow { opacity: 1; letter-spacing: .3em; }
+
+        /* Labels: full neon, bigger, no opacity */
+        .field label { font-size: .72rem; letter-spacing: .16em; opacity: 1; }
+
+        /* Placeholder: readable but softer */
+        .field input::placeholder,
+        .field textarea::placeholder { color: rgba(240,237,232,.48); }
+
+        /* Helper texts: white-ish */
+        .guests-hint  { color: rgba(240,237,232,.65); font-size: .78rem; }
+        .rgpd-field span { color: rgba(240,237,232,.75); font-size: .82rem; }
+        .rgpd-field a { color: var(--neon); font-weight: 500; }
+
+        /* Form spacing */
+        .form-grid { gap: 1.35rem; }
+
+        /* ── MOBILE ── */
+        @media (max-width: 640px) {
+            /* Header */
+            .header         { padding: 0 1.25rem 2.5rem; }
+            .header h1      { font-size: 2.1rem; line-height: 1.1; }
+            .header-sub     { font-size: .88rem; margin-top: .5rem; }
+            .back-link      { font-size: .75rem; padding: .65rem 1rem; }
+            .lang-btn       { font-size: .72rem; padding: .4rem .7rem; top:.8rem; right:.8rem; }
+
+            /* Container / form */
+            .container      { padding: 2rem 1rem 3rem; }
+            .section-title  { font-size: 1.1rem; margin-bottom: 1.5rem; }
+            .form-grid      { gap: 1.1rem; }
+            .form-row       { grid-template-columns: 1fr; gap: .85rem; }
+
+            /* Inputs bigger & more readable */
+            .field label    { font-size: .7rem; letter-spacing: .14em; margin-bottom: .45rem; }
+            .field input,
+            .field select,
+            .field textarea { font-size: 1rem; padding: .85rem 1rem; border-radius: 8px; }
+            .field textarea { min-height: 90px; }
+            .guests-hint    { font-size: .78rem; }
+
+            /* RGPD */
+            .rgpd-field     { gap: .6rem; }
+            .rgpd-field input[type=checkbox] { width: 20px; height: 20px; }
+
+            /* Buttons big touch targets */
+            .submit-btn         { min-height: 56px; font-size: .88rem; letter-spacing: .1em; border-radius: 8px; margin-top: .75rem; }
+            .new-reservation-btn { min-height: 52px; width: 100%; border-radius: 8px; }
+
+            /* Success */
+            .success-card  { padding: 2.5rem 1.25rem; border-radius: 12px; }
+            .success-icon  { width: 52px; height: 52px; font-size: 1.3rem; }
+            .success-detail { font-size: .88rem; line-height: 2; }
+
+            /* Location */
+            .location-container { padding: 1.75rem 1rem; }
+            .location-address   { font-size: 1.05rem; }
+            .location-city      { font-size: .85rem; margin-bottom: 1rem; }
+            .location-map iframe { height: 200px; border-radius: 10px; }
+            .maps-link          { font-size: .82rem; min-height: 44px; }
+
+            /* Footer */
+            .footer         { padding: 1.5rem 1rem; }
+            .footer-phone   { font-size: .82rem; margin-bottom: .85rem; }
+            .social-links   { gap: .75rem; flex-wrap: wrap; }
+            .social-links a { font-size: .8rem; }
+        }
+
+        @media (max-width: 380px) {
+            .header h1  { font-size: 1.85rem; }
+            .field input,
+            .field select,
+            .field textarea { font-size: 1rem; }
+        }
     </style>
 </head>
 <body>

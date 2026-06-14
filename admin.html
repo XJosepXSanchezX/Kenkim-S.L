@@ -164,6 +164,59 @@
             tr{border-bottom:1px solid var(--border);padding:.75rem 0;}
             tr:last-child{border-bottom:none;}
         }
+
+        /* ══ MOBILE ADMIN POLISH ══ */
+        @media (max-width: 768px) {
+            .admin-nav     { padding: .75rem 1rem; }
+            .nav-brand     { font-size: .9rem; }
+            .nav-brand small { font-size: .55rem; }
+            .nav-btn       { padding: .4rem .65rem; font-size: .72rem; }
+            .main-tabs     { overflow-x: auto; display: flex; scrollbar-width: none; }
+            .main-tabs::-webkit-scrollbar { display: none; }
+            .main-tab      { padding: .85rem .85rem; font-size: .75rem; white-space: nowrap; flex-shrink: 0; }
+            .admin-container { padding: .85rem; }
+            .stats-grid    { grid-template-columns: repeat(2,1fr); gap: .65rem; margin-bottom: 1rem; }
+            .stat-card     { padding: 1rem .85rem; border-radius: 8px; }
+            .stat-value    { font-size: 1.8rem; }
+            .stat-label    { font-size: .58rem; }
+            .resto-tabs    { overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; gap: .4rem; margin-bottom: .75rem; }
+            .resto-tabs::-webkit-scrollbar { display: none; }
+            .resto-tab     { padding: .4rem .8rem; font-size: .73rem; flex-shrink: 0; }
+            .toolbar       { flex-direction: column; align-items: stretch; gap: .65rem; padding: .85rem 1rem; }
+            .search-input  { width: 100%; font-size: 1rem; padding: .7rem .9rem; }
+            .filter-group  { width: 100%; }
+            .filter-group label { display: block; margin-bottom: .2rem; }
+            .toolbar input[type=date],
+            .toolbar select { width: 100%; font-size: 1rem; padding: .65rem .85rem; }
+            .btn-clear, .btn-export { width: 100%; padding: .7rem; min-height: 46px; font-size: .82rem; }
+            .cal-wrapper   { border-radius: 10px; }
+            .cal-nav       { padding: .75rem 1rem; gap: .5rem; }
+            .cal-title     { font-size: .9rem; }
+            .cal-nav-btn   { width: 32px; height: 32px; font-size: .8rem; }
+            .cal-today-btn { font-size: .7rem; padding: .3rem .65rem; }
+            .cal-cell      { min-height: 56px; padding: .3rem .2rem; }
+            .cal-num       { width: 26px; height: 26px; font-size: .78rem; }
+            .cal-count     { font-size: .58rem; }
+            .cal-dow       { font-size: .58rem; padding: .5rem 0; letter-spacing: 0; }
+            .day-panel-header { flex-wrap: wrap; gap: .5rem; padding: .85rem 1rem; }
+            .day-panel-title { font-size: .95rem; }
+            .res-card      { flex-direction: column; gap: .4rem; padding: .85rem 1rem; }
+            .res-time      { font-size: .95rem; }
+            .res-actions   { flex-wrap: wrap; gap: .3rem; }
+            .action-btn    { font-size: .7rem; padding: .35rem .65rem; min-height: 38px; }
+            .rec-card      { flex-direction: column; gap: .5rem; }
+            .charts-grid   { grid-template-columns: 1fr; }
+            .chart-card    { padding: 1.1rem; }
+            .login-box     { padding: 2rem 1.25rem; margin: 1rem; border-radius: 10px; }
+            .table-header  { padding: .85rem 1rem; }
+        }
+        @media (max-width: 440px) {
+            .cal-cell   { min-height: 46px; }
+            .cal-num    { width: 22px; height: 22px; font-size: .7rem; }
+            .cal-dots   { display: none; }
+            .main-tab   { padding: .75rem .7rem; font-size: .7rem; }
+            .stats-grid { gap: .5rem; }
+        }
     </style>
 </head>
 <body>
