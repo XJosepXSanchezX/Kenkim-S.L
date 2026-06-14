@@ -9,444 +9,447 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        :root { --bg:#07070F; --surface:#0D0D1A; --neon:#FFB800; --neon-dim:rgba(255,184,0,.12); --neon-glow:rgba(255,184,0,.42); --text:#F0EDE8; --muted:rgba(240,237,232,.4); --border:rgba(255,184,0,.18); --success:#00D4AA; --success-glow:rgba(0,212,170,.35); }
-        * { box-sizing:border-box; margin:0; padding:0; }
-        body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
-        .back-link { display:inline-flex; align-items:center; gap:.35rem; padding:.65rem 1rem; color:var(--muted); text-decoration:none; font-size:.75rem; letter-spacing:.06em; transition:color .2s; border-bottom:1px solid rgba(255,184,0,.08); width:100%; }
-        .back-link:hover { color:var(--neon); }
-        .header { background:var(--bg); padding:0 1.5rem 3rem; text-align:center; position:relative; overflow:hidden; }
-        .header::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--neon),transparent); box-shadow:0 0 20px var(--neon-glow); }
-        .header::after { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(255,184,0,.07) 0%,transparent 70%); pointer-events:none; }
-        .header-top { display:flex; align-items:center; justify-content:space-between; }
-        .header-eyebrow { font-size:.65rem; letter-spacing:.35em; text-transform:uppercase; color:var(--neon); margin-bottom:.9rem; padding-top:2rem; opacity:.9; }
-        .header h1 { font-family:'Playfair Display',serif; font-size:clamp(2.2rem,6vw,3.8rem); color:var(--text); font-weight:400; line-height:1.05; text-shadow:0 0 40px var(--neon-glow),0 0 80px rgba(255,184,0,.2); }
-        .header h1 em { font-style:italic; color:var(--neon); text-shadow:0 0 20px var(--neon-glow),0 0 40px var(--neon-glow); }
-        .divider { width:40px; height:1px; background:var(--neon); margin:1.25rem auto; box-shadow:0 0 8px var(--neon-glow); }
-        .header-sub { color:var(--muted); font-size:.85rem; font-weight:300; letter-spacing:.05em; }
-        /* LANG TOGGLE */
-        .lang-btn { position:absolute; top:1rem; right:1rem; background:rgba(255,184,0,.12); border:1px solid var(--border); color:var(--neon); padding:.35rem .7rem; border-radius:6px; cursor:pointer; font-size:.72rem; font-family:'Inter',sans-serif; letter-spacing:.06em; transition:box-shadow .2s; z-index:5; }
-        .lang-btn:hover { box-shadow:0 0 10px rgba(255,184,0,.3); }
-        .container { max-width:540px; margin:0 auto; padding:2.5rem 1.5rem 3rem; }
-        .section-title { font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:400; color:var(--text); margin-bottom:1.75rem; text-align:center; opacity:.9; }
-        .form-grid { display:grid; gap:1.25rem; }
-        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
-        .field label { display:block; font-size:.65rem; letter-spacing:.18em; text-transform:uppercase; color:var(--neon); margin-bottom:.4rem; font-weight:500; opacity:.8; }
-        .field input,.field select,.field textarea { width:100%; padding:.8rem 1rem; background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:6px; font-family:'Inter',sans-serif; font-size:1rem; color:var(--text); transition:border-color .2s,box-shadow .2s,background .2s; -webkit-appearance:none; appearance:none; }
-        .field input::placeholder,.field textarea::placeholder { color:var(--muted); }
-        .field input:focus,.field select:focus,.field textarea:focus { outline:none; border-color:var(--neon); background:rgba(255,184,0,.04); box-shadow:0 0 0 2px rgba(255,184,0,.15),0 0 20px rgba(255,184,0,.07); }
-        .field textarea { resize:vertical; min-height:80px; }
-        .field select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23FFB800' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 1rem center; padding-right:2.5rem; }
-        .field select option { background:#0D0D1A; color:var(--text); }
-        input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button { -webkit-appearance:none; }
-        input[type=number] { -moz-appearance:textfield; }
-        .guests-hint { font-size:.72rem; color:var(--muted); margin-top:.3rem; }
-        /* RGPD */
-        .rgpd-field { display:flex; align-items:flex-start; gap:.65rem; }
-        .rgpd-field input[type=checkbox] { width:18px; height:18px; flex-shrink:0; margin-top:2px; accent-color:var(--neon); cursor:pointer; }
-        .rgpd-field span { font-size:.78rem; color:var(--muted); line-height:1.5; }
-        .rgpd-field a { color:var(--neon); text-decoration:none; }
-        .rgpd-field a:hover { text-decoration:underline; }
-        /* CAPACITY WARNING */
-        .capacity-warning { background:rgba(255,100,0,.1); border:1px solid rgba(255,100,0,.3); border-radius:6px; padding:.75rem 1rem; font-size:.8rem; color:#FF8C42; display:none; }
-        .submit-btn { width:100%; padding:1rem; background:var(--neon); color:#07070F; border:none; border-radius:6px; font-family:'Inter',sans-serif; font-size:.82rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; cursor:pointer; transition:box-shadow .2s,filter .2s,transform .1s; margin-top:.5rem; }
-        .submit-btn:hover { filter:brightness(1.12); box-shadow:0 0 28px var(--neon-glow),0 0 55px rgba(255,184,0,.2); }
-        .submit-btn:active { transform:scale(.99); }
-        .submit-btn:disabled { opacity:.5; cursor:not-allowed; box-shadow:none; filter:none; }
-        .success-card { display:none; text-align:center; padding:3rem 1.5rem; background:rgba(0,212,170,.05); border-radius:12px; border:1px solid rgba(0,212,170,.25); box-shadow:0 0 30px rgba(0,212,170,.08); }
-        .success-icon { width:56px; height:56px; background:var(--success); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1.25rem; color:#07070F; font-size:1.5rem; box-shadow:0 0 20px var(--success-glow); }
-        .success-card h2 { font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:400; color:var(--text); margin-bottom:.5rem; }
-        .success-card p { color:var(--muted); font-size:.875rem; line-height:1.6; }
-        .success-detail { margin-top:1.5rem; padding:1rem 1.25rem; background:rgba(255,255,255,.04); border-radius:6px; font-size:.875rem; line-height:1.9; color:var(--text); border:1px solid var(--border); }
-        .new-reservation-btn { margin-top:1.5rem; padding:.75rem 2rem; border:1px solid var(--neon); background:transparent; color:var(--neon); border-radius:6px; cursor:pointer; font-family:'Inter',sans-serif; font-size:.78rem; letter-spacing:.1em; text-transform:uppercase; transition:box-shadow .2s; }
-        .new-reservation-btn:hover { box-shadow:0 0 15px rgba(255,184,0,.3); }
-        .location-section { background:var(--surface); border-top:1px solid var(--border); }
-        .location-container { max-width:540px; margin:0 auto; padding:2rem 1.5rem; }
-        .location-label { font-size:.65rem; letter-spacing:.25em; text-transform:uppercase; color:var(--neon); margin-bottom:.4rem; opacity:.8; }
-        .location-address { font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:400; color:var(--text); margin-bottom:.25rem; }
-        .location-city { font-size:.82rem; color:var(--muted); margin-bottom:1.1rem; }
-        .maps-link { display:inline-flex; align-items:center; justify-content:center; gap:.4rem; color:var(--neon); text-decoration:none; font-size:.8rem; font-weight:500; margin-bottom:1.25rem; padding:.55rem 1rem; border:1px solid rgba(255,184,0,.3); border-radius:6px; width:100%; transition:box-shadow .2s; }
-        .maps-link:hover { box-shadow:0 0 14px rgba(255,184,0,.3); }
-        .location-map iframe { width:100%; height:220px; border:1px solid var(--border); border-radius:8px; display:block; filter:grayscale(80%) invert(90%); }
-        .toast { position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%); background:#c0392b; color:white; padding:.75rem 1.5rem; border-radius:6px; font-size:.85rem; display:none; z-index:100; white-space:nowrap; }
-        .footer { text-align:center; padding:1.75rem 1.5rem; color:var(--muted); font-size:.78rem; border-top:1px solid rgba(255,184,0,.08); background:var(--bg); }
-        .footer-phone { margin-bottom:1rem; }
-        .footer-phone a { color:var(--neon); text-decoration:none; font-weight:500; }
-        .social-links { display:flex; justify-content:center; gap:1.25rem; margin-top:.75rem; flex-wrap:wrap; }
-        .social-links a { display:flex; align-items:center; gap:.35rem; color:var(--muted); text-decoration:none; font-size:.78rem; transition:color .2s; }
-        .social-links a:hover { color:var(--neon); }
-        .social-icon { width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:1rem; }
-        .social-icon.ig { background:#E1306C; } .social-icon.tt { background:#010101; border:1px solid #333; } .social-icon.web { background:rgba(255,184,0,.15); border:1px solid var(--border); }
-        /* FLATPICKR DARK */
-        .flatpickr-calendar { background:#0D0D1A !important; border:1px solid rgba(255,184,0,.22) !important; box-shadow:0 0 40px rgba(255,184,0,.12),0 16px 50px rgba(0,0,0,.6) !important; border-radius:14px !important; font-family:'Inter',sans-serif; overflow:hidden; }
-        .flatpickr-months,.flatpickr-months .flatpickr-month,.flatpickr-weekdays,.flatpickr-weekday { background:#0A0A16 !important; }
-        .flatpickr-months .flatpickr-month { height:48px; }
-        .flatpickr-current-month { color:#F0EDE8 !important; font-size:1rem; padding-top:12px; }
-        .flatpickr-current-month .flatpickr-monthDropdown-months { background:#0A0A16 !important; color:#F0EDE8; }
-        .flatpickr-current-month input.cur-year { color:#F0EDE8 !important; }
-        .flatpickr-weekday { color:rgba(255,184,0,.5) !important; font-size:.68rem; }
-        .flatpickr-prev-month,.flatpickr-next-month { color:var(--neon) !important; } .flatpickr-prev-month svg,.flatpickr-next-month svg { fill:var(--neon) !important; }
-        .flatpickr-day { color:#F0EDE8 !important; border-radius:8px !important; border:none !important; }
-        .flatpickr-day:hover { background:rgba(255,184,0,.12) !important; }
-        .flatpickr-day.today { border:1px solid rgba(255,184,0,.5) !important; }
-        .flatpickr-day.selected,.flatpickr-day.selected:hover { background:var(--neon) !important; border-color:var(--neon) !important; color:#07070F !important; font-weight:700 !important; }
-        .flatpickr-day.flatpickr-disabled { color:rgba(240,237,232,.18) !important; }
-        .numInputWrapper span svg { fill:rgba(255,184,0,.6) !important; } .numInput { color:#F0EDE8 !important; }
-        .flatpickr-innerContainer { background:#0D0D1A; }
-        /* MOBILE */
-        @media (max-width:640px) {
-            .back-link { font-size:.72rem; padding:.5rem .85rem; }
-            .header { padding:0 1rem 2rem; } .header h1 { font-size:2rem; }
-            .container { padding:1.75rem 1rem 2.5rem; }
-            .field input,.field select,.field textarea { font-size:1rem; padding:.75rem .9rem; }
-            .submit-btn { min-height:52px; } .new-reservation-btn { min-height:48px; width:100%; }
-            .footer { padding:1.25rem 1rem; } .social-links { flex-wrap:wrap; gap:.6rem; }
-            .location-container { padding:1.5rem 1rem; } .location-map iframe { height:180px; }
+        :root {
+            --bg:      #07070F;
+            --surface: #0D0D1A;
+            --neon:    #FFB800;
+            --neon-rgb:255,184,0;
+            --glow:    rgba(255,184,0,.42);
+            --text:    #FFFFFF;
+            --sub:     rgba(255,255,255,.72);
+            --ph:      rgba(255,255,255,.85);
+            --border:  rgba(255,184,0,.22);
+            --field-bg:rgba(255,255,255,.07);
+            --success: #00D4AA;
         }
-        @media (max-width:380px) { .form-row { grid-template-columns:1fr; } .header h1 { font-size:1.8rem; } }
+        *  { box-sizing:border-box; margin:0; padding:0; }
+        body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
 
-        /* ══ READABILITY + MOBILE POLISH ══ */
+        /* ── HEADER ── */
+        .header { background:var(--bg); padding:0 1.5rem 3rem; text-align:center; position:relative; overflow:hidden; }
+        .header::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--neon),transparent); box-shadow:0 0 18px var(--glow); }
+        .header::after  { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 80% 55% at 50% 0%,rgba(255,184,0,.06),transparent 70%); pointer-events:none; }
+        .header-top { display:flex; align-items:center; }
+        .back-link { display:inline-flex; align-items:center; gap:.35rem; padding:.7rem 1rem; color:var(--sub); text-decoration:none; font-size:.78rem; border-bottom:1px solid rgba(255,255,255,.06); width:100%; transition:color .2s; }
+        .back-link:hover { color:var(--neon); }
+        .lang-btn { position:absolute; top:.85rem; right:1rem; background:rgba(255,184,0,.1); border:1px solid var(--border); color:var(--neon); padding:.38rem .7rem; border-radius:6px; cursor:pointer; font-size:.72rem; font-family:'Inter',sans-serif; z-index:5; }
+        .eyebrow  { font-size:.68rem; letter-spacing:.32em; text-transform:uppercase; color:var(--neon); margin-bottom:.85rem; padding-top:2rem; }
+        .header h1 { font-family:'Playfair Display',serif; font-size:clamp(2rem,6vw,3.8rem); color:var(--text); font-weight:400; line-height:1.05; text-shadow:0 0 35px var(--glow),0 0 70px rgba(255,184,0,.18); }
+        .header h1 em { font-style:italic; color:var(--neon); text-shadow:0 0 18px var(--glow),0 0 38px var(--glow); }
+        .divider  { width:38px; height:1px; background:var(--neon); margin:1.2rem auto; box-shadow:0 0 7px var(--glow); }
+        .sub-text { color:var(--sub); font-size:.9rem; font-weight:300; }
 
-        /* Brighter text throughout */
-        :root { --muted-bright: rgba(240,237,232,.72); }
+        /* ── FORM ── */
+        .container { max-width:540px; margin:0 auto; padding:2.5rem 1.5rem 3rem; }
+        .form-title { font-family:'Playfair Display',serif; font-size:1.2rem; color:var(--text); margin-bottom:1.75rem; text-align:center; }
+        .form-grid  { display:grid; gap:1.25rem; }
+        .row-2 { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
 
-        .back-link   { color: rgba(240,237,232,.72); }
-        .header-sub  { color: rgba(240,237,232,.68); font-size: .9rem; }
-        .section-title { color: #ffffff; opacity: 1; font-size: 1.25rem; }
-        .header-eyebrow { opacity: 1; letter-spacing: .3em; }
+        .field label { display:block; font-size:.72rem; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--neon); margin-bottom:.48rem; }
+        .field input, .field select, .field textarea {
+            width:100%; padding:.85rem 1rem;
+            background:var(--field-bg); border:1px solid var(--border);
+            border-radius:7px; font-family:'Inter',sans-serif; font-size:1rem;
+            color:var(--text); transition:border-color .2s, background .2s, box-shadow .2s;
+            -webkit-appearance:none; appearance:none;
+            color-scheme: dark;
+        }
+        .field input::placeholder, .field textarea::placeholder { color:var(--ph); }
+        .field input:focus, .field select:focus, .field textarea:focus {
+            outline:none; border-color:var(--neon);
+            background:rgba(255,184,0,.06);
+            box-shadow:0 0 0 2px rgba(255,184,0,.14), 0 0 18px rgba(255,184,0,.07);
+        }
+        /* Date input icon white */
+        input[type=date]::-webkit-calendar-picker-indicator { filter:invert(1); opacity:.8; cursor:pointer; width:18px; height:18px; }
+        input[type=date]::-webkit-inner-spin-button, input[type=date]::-webkit-clear-button { display:none; }
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance:none; }
+        input[type=number] { -moz-appearance:textfield; }
+        .field select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23FFB800' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 1rem center; padding-right:2.5rem; }
+        .field select option { background:#0D0D1A; color:#fff; }
+        .field textarea { resize:vertical; min-height:82px; }
+        .hint  { font-size:.78rem; color:var(--sub); margin-top:.35rem; }
+        .warn-capacity { background:rgba(255,120,0,.1); border:1px solid rgba(255,120,0,.3); border-radius:6px; padding:.72rem 1rem; font-size:.82rem; color:#FF9042; display:none; margin-top:-.4rem; }
 
-        /* Labels: full neon, bigger, no opacity */
-        .field label { font-size: .72rem; letter-spacing: .16em; opacity: 1; }
+        /* RGPD */
+        .rgpd { display:flex; align-items:flex-start; gap:.65rem; }
+        .rgpd input[type=checkbox] { width:18px; height:18px; flex-shrink:0; margin-top:2px; accent-color:var(--neon); cursor:pointer; }
+        .rgpd span { font-size:.82rem; color:rgba(255,255,255,.82); line-height:1.55; }
+        .rgpd a { color:var(--neon); }
 
-        /* Placeholder: readable but softer */
-        .field input::placeholder,
-        .field textarea::placeholder { color: rgba(240,237,232,.48); }
+        /* SUBMIT */
+        .btn-submit { width:100%; padding:1rem; background:var(--neon); color:#07070F; border:none; border-radius:8px; font-family:'Inter',sans-serif; font-size:.9rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; transition:filter .2s, box-shadow .2s, transform .1s; margin-top:.5rem; }
+        .btn-submit:hover  { filter:brightness(1.12); box-shadow:0 0 26px var(--glow), 0 0 52px rgba(255,184,0,.18); }
+        .btn-submit:active { transform:scale(.99); }
+        .btn-submit:disabled { opacity:.5; cursor:not-allowed; filter:none; box-shadow:none; }
 
-        /* Helper texts: white-ish */
-        .guests-hint  { color: rgba(240,237,232,.65); font-size: .78rem; }
-        .rgpd-field span { color: rgba(240,237,232,.75); font-size: .82rem; }
-        .rgpd-field a { color: var(--neon); font-weight: 500; }
+        /* SUCCESS */
+        .success { display:none; text-align:center; padding:3rem 1.5rem; background:rgba(0,212,170,.05); border-radius:14px; border:1px solid rgba(0,212,170,.22); }
+        .success-icon { width:54px; height:54px; background:var(--success); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1.25rem; color:#07070F; font-size:1.4rem; box-shadow:0 0 18px rgba(0,212,170,.35); }
+        .success h2 { font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:400; margin-bottom:.5rem; }
+        .success p  { color:var(--sub); font-size:.88rem; line-height:1.7; }
+        .success-detail { margin-top:1.4rem; padding:1rem 1.2rem; background:rgba(255,255,255,.05); border-radius:7px; font-size:.88rem; line-height:1.95; border:1px solid var(--border); }
+        .btn-new { margin-top:1.4rem; padding:.75rem 2rem; border:1px solid var(--neon); background:transparent; color:var(--neon); border-radius:7px; cursor:pointer; font-family:'Inter',sans-serif; font-size:.8rem; letter-spacing:.1em; text-transform:uppercase; min-width:100%; }
 
-        /* Form spacing */
-        .form-grid { gap: 1.35rem; }
+        /* LOCATION */
+        .location { background:var(--surface); border-top:1px solid var(--border); }
+        .loc-inner { max-width:540px; margin:0 auto; padding:2rem 1.5rem; }
+        .loc-label   { font-size:.68rem; letter-spacing:.22em; text-transform:uppercase; color:var(--neon); margin-bottom:.4rem; }
+        .loc-address { font-family:'Playfair Display',serif; font-size:1.1rem; margin-bottom:.25rem; }
+        .loc-city    { font-size:.84rem; color:var(--sub); margin-bottom:1rem; }
+        .loc-link    { display:flex; align-items:center; justify-content:center; gap:.4rem; color:var(--neon); text-decoration:none; font-size:.82rem; font-weight:500; margin-bottom:1.2rem; padding:.55rem 1rem; border:1px solid rgba(255,184,0,.28); border-radius:7px; transition:box-shadow .2s; }
+        .loc-link:hover { box-shadow:0 0 12px rgba(255,184,0,.3); }
+        .loc-map iframe { width:100%; height:220px; border:1px solid var(--border); border-radius:10px; display:block; filter:grayscale(75%) invert(88%); }
+
+        /* TOAST */
+        .toast { position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%); background:#c0392b; color:#fff; padding:.75rem 1.5rem; border-radius:7px; font-size:.84rem; display:none; z-index:100; max-width:90%; text-align:center; }
+
+        /* FOOTER */
+        .footer { text-align:center; padding:1.75rem 1.5rem; border-top:1px solid rgba(255,184,0,.07); }
+        .footer-tel { margin-bottom:.9rem; font-size:.82rem; color:var(--sub); }
+        .footer-tel a { color:var(--neon); text-decoration:none; font-weight:500; }
+        .socials { display:flex; justify-content:center; gap:1.1rem; flex-wrap:wrap; }
+        .socials a { display:flex; align-items:center; gap:.35rem; color:var(--sub); text-decoration:none; font-size:.78rem; transition:color .2s; }
+        .socials a:hover { color:var(--neon); }
+        .sico { width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:.95rem; }
+        .sico.ig  { background:#E1306C; }
+        .sico.tt  { background:#111; border:1px solid #333; }
+        .sico.web { background:rgba(255,184,0,.14); border:1px solid var(--border); }
 
         /* ── MOBILE ── */
-        @media (max-width: 640px) {
-            /* Header */
-            .header         { padding: 0 1.25rem 2.5rem; }
-            .header h1      { font-size: 2.1rem; line-height: 1.1; }
-            .header-sub     { font-size: .88rem; margin-top: .5rem; }
-            .back-link      { font-size: .75rem; padding: .65rem 1rem; }
-            .lang-btn       { font-size: .72rem; padding: .4rem .7rem; top:.8rem; right:.8rem; }
-
-            /* Container / form */
-            .container      { padding: 2rem 1rem 3rem; }
-            .section-title  { font-size: 1.1rem; margin-bottom: 1.5rem; }
-            .form-grid      { gap: 1.1rem; }
-            .form-row       { grid-template-columns: 1fr; gap: .85rem; }
-
-            /* Inputs bigger & more readable */
-            .field label    { font-size: .7rem; letter-spacing: .14em; margin-bottom: .45rem; }
+        @media (max-width: 600px) {
+            .header       { padding:0 1rem 2.25rem; }
+            .back-link    { font-size:.75rem; padding:.65rem 1rem; }
+            .lang-btn     { top:.8rem; right:.8rem; font-size:.7rem; padding:.35rem .6rem; }
+            .header h1    { font-size:2rem; margin-top:1.25rem; }
+            .eyebrow      { padding-top:1.5rem; font-size:.65rem; }
+            .divider      { margin:.9rem auto; }
+            .sub-text     { font-size:.86rem; }
+            .container    { padding:1.75rem 1rem 3rem; }
+            .form-title   { font-size:1.08rem; margin-bottom:1.35rem; }
+            .form-grid    { gap:1.1rem; }
+            .row-2        { grid-template-columns:1fr; gap:.9rem; }
+            .field label  { font-size:.7rem; margin-bottom:.42rem; }
             .field input,
             .field select,
-            .field textarea { font-size: 1rem; padding: .85rem 1rem; border-radius: 8px; }
-            .field textarea { min-height: 90px; }
-            .guests-hint    { font-size: .78rem; }
-
-            /* RGPD */
-            .rgpd-field     { gap: .6rem; }
-            .rgpd-field input[type=checkbox] { width: 20px; height: 20px; }
-
-            /* Buttons big touch targets */
-            .submit-btn         { min-height: 56px; font-size: .88rem; letter-spacing: .1em; border-radius: 8px; margin-top: .75rem; }
-            .new-reservation-btn { min-height: 52px; width: 100%; border-radius: 8px; }
-
-            /* Success */
-            .success-card  { padding: 2.5rem 1.25rem; border-radius: 12px; }
-            .success-icon  { width: 52px; height: 52px; font-size: 1.3rem; }
-            .success-detail { font-size: .88rem; line-height: 2; }
-
-            /* Location */
-            .location-container { padding: 1.75rem 1rem; }
-            .location-address   { font-size: 1.05rem; }
-            .location-city      { font-size: .85rem; margin-bottom: 1rem; }
-            .location-map iframe { height: 200px; border-radius: 10px; }
-            .maps-link          { font-size: .82rem; min-height: 44px; }
-
-            /* Footer */
-            .footer         { padding: 1.5rem 1rem; }
-            .footer-phone   { font-size: .82rem; margin-bottom: .85rem; }
-            .social-links   { gap: .75rem; flex-wrap: wrap; }
-            .social-links a { font-size: .8rem; }
+            .field textarea { font-size:1rem; padding:.82rem .95rem; min-height:52px; border-radius:8px; }
+            .field textarea { min-height:88px; }
+            .hint         { font-size:.76rem; }
+            .rgpd span    { font-size:.8rem; }
+            .rgpd input[type=checkbox] { width:20px; height:20px; }
+            .btn-submit   { min-height:56px; font-size:.88rem; border-radius:10px; margin-top:.75rem; }
+            .btn-new      { min-height:50px; font-size:.78rem; }
+            .success      { padding:2.25rem 1.1rem; border-radius:12px; }
+            .loc-inner    { padding:1.6rem 1rem; }
+            .loc-map iframe { height:190px; }
+            .loc-link     { font-size:.8rem; min-height:46px; }
+            .footer       { padding:1.4rem 1rem; }
+            .footer-tel   { font-size:.8rem; }
+            .socials      { gap:.75rem; }
+            .toast        { font-size:.82rem; }
+        }
+        @media (max-width: 360px) {
+            .header h1 { font-size:1.8rem; }
+            .btn-submit { font-size:.82rem; }
         }
 
-        @media (max-width: 380px) {
-            .header h1  { font-size: 1.85rem; }
-            .field input,
-            .field select,
-            .field textarea { font-size: 1rem; }
+        /* ── FLATPICKR DARK NEON (desktop only) ── */
+        .flatpickr-calendar {
+            background: #0D0D1A !important;
+            border: 1px solid rgba(255,184,0,.25) !important;
+            box-shadow: 0 0 30px rgba(255,184,0,.12), 0 20px 60px rgba(0,0,0,.7) !important;
+            border-radius: 16px !important;
+            font-family: 'Inter', sans-serif !important;
+            overflow: hidden !important;
+            width: 320px !important;
         }
+        .flatpickr-months {
+            background: rgba(255,184,0,.08) !important;
+            border-bottom: 1px solid rgba(255,184,0,.15) !important;
+            padding: .5rem 0 !important;
+        }
+        .flatpickr-months .flatpickr-month,
+        .flatpickr-weekdays,
+        .flatpickr-weekday { background: transparent !important; }
+        .flatpickr-current-month { font-size: 1rem !important; color: #fff !important; font-weight: 500 !important; }
+        .flatpickr-current-month .flatpickr-monthDropdown-months {
+            background: #0D0D1A !important; color: #fff !important;
+        }
+        .flatpickr-current-month input.cur-year { color: #fff !important; }
+        .flatpickr-prev-month, .flatpickr-next-month {
+            color: rgba(255,184,0,1) !important;
+            fill: rgba(255,184,0,1) !important;
+        }
+        .flatpickr-prev-month:hover, .flatpickr-next-month:hover { background: rgba(255,184,0,.12) !important; border-radius: 8px !important; }
+        .flatpickr-prev-month svg, .flatpickr-next-month svg { fill: rgba(255,184,0,1) !important; }
+        .flatpickr-weekday {
+            color: rgba(255,184,0,.55) !important;
+            font-size: .7rem !important;
+            letter-spacing: .06em !important;
+            font-weight: 600 !important;
+        }
+        .flatpickr-days { border: none !important; padding: .4rem !important; }
+        .dayContainer { padding: .2rem !important; }
+        .flatpickr-day {
+            color: rgba(255,255,255,.88) !important;
+            border: none !important;
+            border-radius: 9px !important;
+            font-size: .88rem !important;
+            height: 38px !important;
+            line-height: 38px !important;
+            transition: background .15s !important;
+        }
+        .flatpickr-day:hover { background: rgba(255,184,0,.14) !important; color: #fff !important; }
+        .flatpickr-day.today {
+            border: 1.5px solid rgba(255,184,0,.7) !important;
+            color: #fff !important;
+            font-weight: 600 !important;
+        }
+        .flatpickr-day.today:hover { background: rgba(255,184,0,.15) !important; }
+        .flatpickr-day.selected, .flatpickr-day.selected:hover {
+            background: rgba(255,184,0,1) !important;
+            border: none !important;
+            color: #07070F !important;
+            font-weight: 700 !important;
+            box-shadow: 0 0 12px rgba(255,184,0,.5) !important;
+        }
+        .flatpickr-day.flatpickr-disabled {
+            color: rgba(255,255,255,.18) !important;
+        }
+        .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay {
+            color: rgba(255,255,255,.22) !important;
+        }
+        .numInputWrapper span { border-color: rgba(255,184,0,.2) !important; }
+        .numInputWrapper span svg { fill: rgba(255,184,0,.7) !important; }
+        .flatpickr-innerContainer { background: #0D0D1A !important; }
     </style>
-
-<style>
-/* ══ WHITE TEXT + MOBILE OVERRIDES (final) ══ */
-
-/* ── ALL TEXT PURE WHITE ── */
-body { color: #FFFFFF; }
-.section-title    { color: #FFFFFF !important; font-size: 1.2rem !important; font-weight: 400 !important; opacity: 1 !important; }
-.header-eyebrow   { color: var(--neon) !important; opacity: 1 !important; font-size: .72rem !important; }
-.header-sub       { color: rgba(255,255,255,.78) !important; font-size: .92rem !important; }
-.back-link        { color: rgba(255,255,255,.78) !important; font-size: .8rem !important; }
-.lang-btn         { color: var(--neon) !important; background: rgba(255,255,255,.06) !important; }
-.field label      { color: var(--neon) !important; opacity: 1 !important; font-size: .75rem !important; font-weight: 600 !important; letter-spacing: .13em !important; margin-bottom: .5rem !important; }
-.field input,
-.field select,
-.field textarea   { color: #FFFFFF !important; font-size: 1rem !important; background: rgba(255,255,255,.07) !important; border-color: rgba(255,255,255,.18) !important; }
-.field input:focus,
-.field select:focus,
-.field textarea:focus { border-color: var(--neon) !important; background: rgba(255,255,255,.1) !important; box-shadow: 0 0 0 2px rgba(255,255,255,.08) !important; }
-.field input::placeholder,
-.field textarea::placeholder { color: rgba(255,255,255,.88) !important; }
-.field select option { background: #0D0D1A !important; color: #FFFFFF !important; }
-.guests-hint      { color: rgba(255,255,255,.72) !important; font-size: .8rem !important; }
-.rgpd-field span  { color: rgba(255,255,255,.82) !important; font-size: .84rem !important; }
-.rgpd-field a     { color: var(--neon) !important; }
-.header-sub       { color: rgba(255,255,255,.75) !important; }
-.success-card p   { color: rgba(255,255,255,.78) !important; }
-.success-detail   { color: rgba(255,255,255,.88) !important; }
-.location-label   { color: var(--neon) !important; opacity: 1 !important; }
-.location-address { color: #FFFFFF !important; }
-.location-city    { color: rgba(255,255,255,.72) !important; }
-.footer-phone     { color: rgba(255,255,255,.72) !important; }
-.social-links a   { color: rgba(255,255,255,.65) !important; }
-.capacity-warning { color: #FFB066 !important; font-size: .84rem !important; }
-.new-reservation-btn { color: var(--neon) !important; border-color: var(--neon) !important; }
-
-/* ── MOBILE LAYOUT ── */
-@media (max-width: 640px) {
-    .header            { padding: 0 1rem 2.5rem !important; }
-    .header-top        { padding-top: 0 !important; }
-    .back-link         { padding: .7rem 1rem !important; border-bottom: 1px solid rgba(255,255,255,.06) !important; }
-    .lang-btn          { top: .85rem !important; right: .85rem !important; font-size: .72rem !important; padding: .38rem .65rem !important; }
-    .header h1         { font-size: 2.1rem !important; margin-top: 1.5rem !important; }
-    .header-eyebrow    { padding-top: 1.75rem !important; }
-    .divider           { margin: 1rem auto !important; }
-    .container         { padding: 1.75rem 1rem 3rem !important; }
-    .section-title     { font-size: 1.1rem !important; margin-bottom: 1.5rem !important; }
-    .form-grid         { gap: 1.15rem !important; }
-    .form-row          { grid-template-columns: 1fr !important; gap: .9rem !important; }
-    .field label       { font-size: .73rem !important; margin-bottom: .45rem !important; }
-    .field input,
-    .field select,
-    .field textarea    { font-size: 1rem !important; padding: .88rem 1rem !important; border-radius: 8px !important; min-height: 52px !important; }
-    .field textarea    { min-height: 88px !important; }
-    .guests-hint       { font-size: .78rem !important; margin-top: .35rem !important; }
-    .rgpd-field        { gap: .65rem !important; align-items: flex-start !important; }
-    .rgpd-field input[type=checkbox] { width: 20px !important; height: 20px !important; flex-shrink: 0 !important; margin-top: 1px !important; }
-    .submit-btn        { min-height: 56px !important; font-size: .9rem !important; border-radius: 10px !important; margin-top: .85rem !important; letter-spacing: .1em !important; }
-    .new-reservation-btn { min-height: 50px !important; width: 100% !important; border-radius: 8px !important; font-size: .82rem !important; }
-    .success-card      { padding: 2.25rem 1.25rem !important; border-radius: 14px !important; }
-    .success-icon      { width: 54px !important; height: 54px !important; font-size: 1.4rem !important; }
-    .location-container { padding: 1.75rem 1rem !important; }
-    .location-label    { font-size: .7rem !important; }
-    .location-address  { font-size: 1.05rem !important; }
-    .maps-link         { font-size: .84rem !important; min-height: 46px !important; border-radius: 8px !important; }
-    .location-map iframe { height: 200px !important; border-radius: 10px !important; }
-    .footer            { padding: 1.5rem 1rem !important; }
-    .footer-phone      { font-size: .84rem !important; margin-bottom: .9rem !important; }
-    .social-links      { gap: .75rem !important; flex-wrap: wrap !important; justify-content: center !important; }
-    .social-links a    { font-size: .8rem !important; }
-    .social-icon       { width: 30px !important; height: 30px !important; }
-    
-        input[type=date]::-webkit-calendar-picker-indicator {
-            filter: invert(1);
-            opacity: .7;
-            cursor: pointer;
-        }
-        input[type=date]::-webkit-inner-spin-button { display: none; }
-        input[type=date]::-webkit-clear-button { display: none; }
-
-        .toast             { width: 90% !important; text-align: center !important; white-space: normal !important; font-size: .84rem !important; }
-}
-
-@media (max-width: 380px) {
-    .header h1         { font-size: 1.85rem !important; }
-    .submit-btn        { font-size: .84rem !important; }
-}
-</style>
 </head>
 <body>
+
 <header class="header">
     <div class="header-top">
         <a class="back-link" href="/">← <span data-t="back">Todos los restaurantes</span></a>
-        <button class="lang-btn" onclick="toggleLang()" id="lang-btn">🇬🇧 EN</button>
+        <button class="lang-btn" id="lang-btn" onclick="toggleLang()">🇬🇧 EN</button>
     </div>
-    <p class="header-eyebrow">🔥 Grupo KenKim</p>
+    <p class="eyebrow">🔥 Grupo KenKim</p>
     <h1>La <em>Hoguera</em></h1>
     <div class="divider"></div>
-    <p class="header-sub" data-t="sub">Reserve su mesa en segundos</p>
+    <p class="sub-text" data-t="sub">Reserve su mesa en segundos</p>
 </header>
 
 <div class="container">
-    <div id="form-section">
-        <p class="section-title" data-t="title">Solicitar reserva</p>
+    <div id="form-wrap">
+        <p class="form-title" data-t="title">Solicitar reserva</p>
         <div class="form-grid">
-            <div class="form-row">
-                <div class="field"><label for="name" data-t="lbl-name">Nombre *</label><input type="text" id="name" data-t-ph="ph-name" placeholder="Tu nombre" required autocomplete="name"></div>
-                <div class="field"><label for="phone" data-t="lbl-phone">Teléfono *</label><input type="tel" id="phone" data-t-ph="ph-phone" placeholder="6XX XXX XXX" required autocomplete="tel"></div>
+
+            <div class="row-2">
+                <div class="field">
+                    <label data-t="ln">NOMBRE *</label>
+                    <input type="text" id="name" placeholder="Tu nombre" autocomplete="name" required>
+                </div>
+                <div class="field">
+                    <label data-t="lp">TELÉFONO *</label>
+                    <input type="tel" id="phone" placeholder="6XX XXX XXX" autocomplete="tel" required>
+                </div>
             </div>
-            <div class="field"><label for="email">Email <span style="opacity:.4;font-style:italic" data-t="optional">(opcional)</span></label><input type="email" id="email" data-t-ph="ph-email" placeholder="para enviarte confirmación" autocomplete="email"></div>
-            <div class="form-row">
-                <div class="field"><label for="date" data-t="lbl-date">Fecha *</label><input type="date" id="date" required></div>
-                <div class="field"><label for="time" data-t="lbl-time">Hora *</label>
+
+            <div class="field">
+                <label data-t="le">EMAIL <span style="opacity:.55;font-style:italic;font-weight:400" data-t="opt">(opcional)</span></label>
+                <input type="email" id="email" placeholder="para enviarte confirmación" autocomplete="email">
+            </div>
+
+            <div class="row-2">
+                <div class="field">
+                    <label data-t="ld">FECHA *</label>
+                    <input type="date" id="date" required>
+                </div>
+                <div class="field">
+                    <label data-t="lt">HORA *</label>
                     <select id="time" required>
-                        <option value="" data-t="select">Seleccionar</option>
-                        <optgroup label="— Comida —"><option value="13:00">13:00</option><option value="13:30">13:30</option><option value="14:00">14:00</option><option value="14:30">14:30</option><option value="15:00">15:00</option></optgroup>
-                        <optgroup label="— Cena —"><option value="20:00">20:00</option><option value="20:30">20:30</option><option value="21:00">21:00</option><option value="21:30">21:30</option><option value="22:00">22:00</option></optgroup>
+                        <option value="" data-t="sel">Seleccionar</option>
+                        <optgroup label="— Comida —">
+                            <option value="13:00">13:00</option><option value="13:30">13:30</option>
+                            <option value="14:00">14:00</option><option value="14:30">14:30</option>
+                            <option value="15:00">15:00</option>
+                        </optgroup>
+                        <optgroup label="— Cena —">
+                            <option value="20:00">20:00</option><option value="20:30">20:30</option>
+                            <option value="21:00">21:00</option><option value="21:30">21:30</option>
+                            <option value="22:00">22:00</option>
+                        </optgroup>
                     </select>
                 </div>
             </div>
-            <div class="field"><label for="guests" data-t="lbl-guests">Comensales *</label><input type="number" id="guests" min="1" max="50" data-t-ph="ph-guests" placeholder="Número de personas" required oninput="checkCapacity()"><p class="guests-hint" data-t="guests-hint">Máximo 50 personas. Para eventos, llámanos.</p></div>
-            <div class="capacity-warning" id="capacity-warning" data-t="cap-warn">⚠️ Aforo limitado para ese horario. Por favor elige otra hora o llámanos.</div>
-            <div class="field"><label for="notes" data-t="lbl-notes">Notas especiales <span style="opacity:.4;font-style:italic" data-t="optional">(opcional)</span></label><textarea id="notes" data-t-ph="ph-notes" placeholder="Alergias, ocasión especial, preferencia de mesa…"></textarea></div>
-            <div class="rgpd-field"><input type="checkbox" id="rgpd" required><span data-t="rgpd">He leído y acepto la <a href="/privacidad" target="_blank">política de privacidad</a> y el tratamiento de mis datos. *</span></div>
-            <button class="submit-btn" id="submit-btn" data-t="btn-submit" onclick="submitReservation()">Solicitar reserva</button>
+
+            <div class="field">
+                <label data-t="lg">COMENSALES *</label>
+                <input type="number" id="guests" min="1" max="50" placeholder="Número de personas" required oninput="checkCapacity()">
+                <p class="hint" data-t="gh">Máximo 50 personas. Para eventos, llámanos.</p>
+            </div>
+
+            <div class="warn-capacity" id="warn-cap" data-t="wc">⚠️ Aforo limitado para ese horario. Por favor elige otra hora o llámanos.</div>
+
+            <div class="field">
+                <label data-t="lno">NOTAS <span style="opacity:.55;font-style:italic;font-weight:400" data-t="opt">(opcional)</span></label>
+                <textarea id="notes" placeholder="Alergias, ocasión especial, preferencia de mesa…"></textarea>
+            </div>
+
+            <div class="rgpd">
+                <input type="checkbox" id="rgpd" required>
+                <span data-t="rg">He leído y acepto la <a href="/privacidad" target="_blank">política de privacidad</a> y el tratamiento de mis datos. *</span>
+            </div>
+
+            <button class="btn-submit" id="btn-sub" onclick="enviar()">
+                <span data-t="bs">Solicitar reserva</span>
+            </button>
         </div>
     </div>
-    <div class="success-card" id="success-card">
+
+    <div class="success" id="success">
         <div class="success-icon">✓</div>
-        <h2 data-t="success-h2">¡Reserva recibida!</h2>
-        <p><span data-t="success-p">Gracias,</span> <strong id="success-name"></strong>. <span data-t="success-p2">Nos pondremos en contacto contigo para confirmar.</span></p>
-        <div class="success-detail" id="success-detail"></div>
-        <button class="new-reservation-btn" data-t="btn-new" onclick="resetForm()">Hacer otra reserva</button>
+        <h2 data-t="sh">¡Reserva recibida!</h2>
+        <p><span data-t="sp">Gracias,</span> <strong id="sname"></strong>. <span data-t="sp2">Nos pondremos en contacto para confirmar.</span></p>
+        <div class="success-detail" id="sdetail"></div>
+        <button class="btn-new" onclick="resetForm()"><span data-t="bn">Hacer otra reserva</span></button>
     </div>
 </div>
 
-<section class="location-section">
-    <div class="location-container">
-        <p class="location-label" data-t="loc-label">📍 Dónde estamos</p>
-        <p class="location-address">Carrer de Béjar, 70</p>
-        <p class="location-city">Sants-Montjuïc · 08014 Barcelona</p>
-        <a class="maps-link" href="https://maps.google.com/maps?ftid=0x12a499fe9eafdadd:0x64d564bb008eb09c" target="_blank" rel="noopener"><span data-t="maps-link">📍 Ver en Google Maps →</span></a>
-        <div class="location-map"><iframe src="https://maps.google.com/maps?q=Carrer+de+Bejar,+70,+Barcelona&output=embed&hl=es" width="100%" height="220" style="border:0" allowfullscreen="" loading="lazy"></iframe></div>
+<section class="location">
+    <div class="loc-inner">
+        <p class="loc-label" data-t="ll">📍 Dónde estamos</p>
+        <p class="loc-address">Carrer de Béjar, 70</p>
+        <p class="loc-city">Sants-Montjuïc · 08014 Barcelona</p>
+        <a class="loc-link" href="https://maps.google.com/maps?ftid=0x12a499fe9eafdadd:0x64d564bb008eb09c" target="_blank" rel="noopener"><span data-t="ml">📍 Ver en Google Maps →</span></a>
+        <div class="loc-map"><iframe src="https://maps.google.com/maps?q=Carrer+de+Bejar,+70,+Barcelona&output=embed&hl=es" width="100%" height="220" style="border:0" allowfullscreen="" loading="lazy"></iframe></div>
     </div>
 </section>
 
 <div class="toast" id="toast"></div>
 
 <footer class="footer">
-    <div class="footer-phone"><span data-t="footer-cta">¿Grupo grande o evento especial? Llámanos al</span> <a href="tel:+34636360655">636 360 655</a></div>
-    <div class="social-links">
-        <a href="https://instagram.com/otitanuz_bar" target="_blank" rel="noopener"><span class="social-icon ig">📸</span> Instagram</a>
-        <a href="https://tiktok.com/@otitanuz_bar" target="_blank" rel="noopener"><span class="social-icon tt">🎵</span> TikTok</a>
-        <a href="https://grupokenkim.pages.dev" target="_blank" rel="noopener"><span class="social-icon web">🌐</span> Web</a>
+    <div class="footer-tel"><span data-t="fc">¿Grupo grande o evento? Llámanos al</span> <a href="tel:+34636360655">636 360 655</a></div>
+    <div class="socials">
+        <a href="https://instagram.com/otitanuz_bar" target="_blank"><span class="sico ig">📸</span> Instagram</a>
+        <a href="https://tiktok.com/@otitanuz_bar" target="_blank"><span class="sico tt">🎵</span> TikTok</a>
+        <a href="https://grupokenkim.pages.dev" target="_blank"><span class="sico web">🌐</span> Web</a>
     </div>
 </footer>
 
 <script>
-    /* ── CONFIG (editar aquí) ── */
-    var CLOSED_WEEKDAYS = 1; // 0=Dom 1=Lun 2=Mar 3=Mié 4=Jue 5=Vie 6=Sáb
-    var MAX_GUESTS_SLOT = 100;  // Aforo máximo de personas por turno (0 = sin límite)
-    /* ────────────────────────── */
+/* ── CONFIG ── */
+var CLOSED_WEEKDAYS = [];   /* 0=Dom 1=Lun … 6=Sáb  ej: [1] cierra lunes */
+var MAX_GUESTS      = 100;  /* aforo máximo por turno */
+var RESTO           = 'La Hoguera';
 
-    var SUPABASE_URL='https://axqptiwackqbtkqpylzm.supabase.co', SUPABASE_KEY='sb_publishable_JqZlwNT9tHPPKsIYDGurQQ_JQZeGoLd';
-    var EMAILJS_PUBLIC_KEY='HFehV9yfugqgpbr5M', EMAILJS_SERVICE_ID='service_2p4kohv', EMAILJS_TEMPLATE_ID='template_2cqbwfi';
-    var RESTAURANT_NAME='La Hoguera';
-    var db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-    emailjs.init(EMAILJS_PUBLIC_KEY);
+/* ── SUPABASE + EMAILJS ── */
+var db   = supabase.createClient('https://axqptiwackqbtkqpylzm.supabase.co','sb_publishable_JqZlwNT9tHPPKsIYDGurQQ_JQZeGoLd');
+var EJS  = { pub:'HFehV9yfugqgpbr5M', svc:'service_2p4kohv', tpl:'template_2cqbwfi' };
+emailjs.init(EJS.pub);
 
-    /* ── TRANSLATIONS ── */
-    var T = {
-        es: { back:'Todos los restaurantes', sub:'Reserve su mesa en segundos', title:'Solicitar reserva', 'lbl-name':'Nombre *', 'lbl-phone':'Teléfono *', 'lbl-date':'Fecha *', 'lbl-time':'Hora *', 'lbl-guests':'Comensales *', 'lbl-notes':'Notas especiales', optional:'(opcional)', 'ph-name':'Tu nombre', 'ph-phone':'6XX XXX XXX', 'ph-email':'para enviarte confirmación', 'ph-date':'Seleccionar fecha', 'ph-guests':'Número de personas', 'ph-notes':'Alergias, ocasión especial, preferencia de mesa…', select:'Seleccionar', 'guests-hint':'Máximo 50 personas. Para eventos, llámanos.', rgpd:'He leído y acepto la <a href="/privacidad" target="_blank">política de privacidad</a> y el tratamiento de mis datos. *', 'btn-submit':'Solicitar reserva', 'success-h2':'¡Reserva recibida!', 'success-p':'Gracias,', 'success-p2':'Nos pondremos en contacto contigo para confirmar.', 'btn-new':'Hacer otra reserva', 'loc-label':'📍 Dónde estamos', 'maps-link':'📍 Ver en Google Maps →', 'footer-cta':'¿Grupo grande o evento especial? Llámanos al', 'cap-warn':'⚠️ Aforo limitado para ese horario. Por favor elige otra hora o llámanos.' },
-        en: { back:'All restaurants', sub:'Book your table in seconds', title:'Book a table', 'lbl-name':'Name *', 'lbl-phone':'Phone *', 'lbl-date':'Date *', 'lbl-time':'Time *', 'lbl-guests':'Guests *', 'lbl-notes':'Special notes', optional:'(optional)', 'ph-name':'Your name', 'ph-phone':'Your phone number', 'ph-email':'to send you a confirmation', 'ph-date':'Select a date', 'ph-guests':'Number of guests', 'ph-notes':'Allergies, special occasion, table preference…', select:'Select', 'guests-hint':'Max 50 people. For events, please call us.', rgpd:'I have read and accept the <a href="/privacidad" target="_blank">privacy policy</a> and the processing of my data. *', 'btn-submit':'Book now', 'success-h2':'Booking received!', 'success-p':'Thank you,', 'success-p2':'We will contact you shortly to confirm.', 'btn-new':'Make another booking', 'loc-label':'📍 Where we are', 'maps-link':'📍 View on Google Maps →', 'footer-cta':'Large group or special event? Call us at', 'cap-warn':'⚠️ Limited capacity for that time slot. Please choose another time or call us.' }
-    };
-    var currentLang = 'es';
-    function applyLang(lang) {
-        currentLang = lang;
-        document.getElementById('lang-btn').textContent = lang === 'es' ? '🇬🇧 EN' : '🇪🇸 ES';
-        document.querySelectorAll('[data-t]').forEach(function(el) {
-            var key = el.getAttribute('data-t');
-            if (T[lang][key] !== undefined) el.innerHTML = T[lang][key];
-        });
-        document.querySelectorAll('[data-t-ph]').forEach(function(el) {
-            var key = el.getAttribute('data-t-ph');
-            if (T[lang][key] !== undefined) el.placeholder = T[lang][key];
-        });
-        fpInstance.set('locale', lang === 'es' ? 'es' : 'default');
+/* ── DATE MIN ── */
+document.getElementById('date').min = new Date().toISOString().split('T')[0];
+
+/* Flatpickr: neon calendar on desktop, native picker on mobile */
+var closedDates = [];
+var fp = flatpickr('#date', {
+    locale: 'es',
+    minDate: 'today',
+    dateFormat: 'Y-m-d',
+    disableMobile: false,
+    disable: [function(date) {
+        var ds = date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0');
+        var cd = Array.isArray(closedDates) ? closedDates : [];
+        return CLOSED_WEEKDAYS.indexOf(date.getDay()) > -1 || cd.indexOf(ds) > -1;
+    }]
+});
+
+/* ── CLOSED DATES ── */
+db.from('closed_dates').select('date').then(function(r){ if(!r.error&&r.data) closedDates=r.data.map(function(x){return x.date;}); });
+
+/* ── TRANSLATIONS ── */
+var lang = 'es';
+var T = {
+    es:{ back:'Todos los restaurantes', sub:'Reserve su mesa en segundos', title:'Solicitar reserva', ln:'NOMBRE *', lp:'TELÉFONO *', le:'EMAIL', opt:'(opcional)', ld:'FECHA *', lt:'HORA *', lg:'COMENSALES *', gh:'Máximo 50 personas. Para eventos, llámanos.', lno:'NOTAS', rg:'He leído y acepto la <a href="/privacidad" target="_blank">política de privacidad</a> y el tratamiento de mis datos. *', bs:'Solicitar reserva', sh:'¡Reserva recibida!', sp:'Gracias,', sp2:'Nos pondremos en contacto para confirmar.', bn:'Hacer otra reserva', ll:'📍 Dónde estamos', ml:'📍 Ver en Google Maps →', fc:'¿Grupo grande o evento? Llámanos al', sel:'Seleccionar', wc:'⚠️ Aforo limitado para ese horario. Por favor elige otra hora o llámanos.' },
+    en:{ back:'All restaurants', sub:'Book your table in seconds', title:'Book a table', ln:'NAME *', lp:'PHONE *', le:'EMAIL', opt:'(optional)', ld:'DATE *', lt:'TIME *', lg:'GUESTS *', gh:'Max 50 people. For events, call us.', lno:'NOTES', rg:'I have read and accept the <a href="/privacidad" target="_blank">privacy policy</a> and the processing of my data. *', bs:'Book now', sh:'Booking received!', sp:'Thank you,', sp2:'We will contact you to confirm.', bn:'Make another booking', ll:'📍 Where we are', ml:'📍 View on Google Maps →', fc:'Large group or event? Call us at', sel:'Select', wc:'⚠️ Limited capacity for that time slot. Please choose another time.' }
+};
+function applyLang(l){
+    lang=l; document.getElementById('lang-btn').textContent=l==='es'?'🇬🇧 EN':'🇪🇸 ES';
+    document.querySelectorAll('[data-t]').forEach(function(el){ var k=el.getAttribute('data-t'); if(T[l][k]!==undefined) el.innerHTML=T[l][k]; });
+    document.getElementById('date').placeholder=l==='es'?'dd/mm/aaaa':'dd/mm/yyyy';
+}
+function toggleLang(){ var nl=lang==='es'?'en':'es'; applyLang(nl); if(fp) fp.set('locale', nl==='es'?flatpickr.l10ns.es:flatpickr.l10ns.default); }
+
+/* ── CAPACITY CHECK ── */
+async function checkCapacity(){
+    if(!MAX_GUESTS) return;
+    var d=document.getElementById('date').value, t=document.getElementById('time').value, g=parseInt(document.getElementById('guests').value)||0;
+    if(!d||!t||!g){ document.getElementById('warn-cap').style.display='none'; return; }
+    var r=await db.from('reservations').select('guests').eq('date',d).eq('time',t).in('status',['pendiente','confirmada']);
+    var total=(r.data||[]).reduce(function(s,x){return s+x.guests;},0);
+    document.getElementById('warn-cap').style.display=(total+g>MAX_GUESTS)?'block':'none';
+}
+
+/* ── SUBMIT ── */
+async function enviar(){
+    var name=document.getElementById('name').value.trim();
+    var phone=document.getElementById('phone').value.trim();
+    var email=document.getElementById('email').value.trim();
+    var date=document.getElementById('date').value;
+    var time=document.getElementById('time').value;
+    var guests=document.getElementById('guests').value;
+    var notes=document.getElementById('notes').value.trim();
+    var rgpd=document.getElementById('rgpd').checked;
+
+    var err = lang==='es'
+        ? { fields:'Por favor rellena todos los campos obligatorios.', rgpd:'Debes aceptar la política de privacidad.', guests:'Entre 1 y 50 personas.', closed:'Lo sentimos, ese día está cerrado.', full:'Sin aforo disponible para ese horario.', error:'Error al enviar. Inténtalo de nuevo.' }
+        : { fields:'Please fill in all required fields.', rgpd:'You must accept the privacy policy.', guests:'Between 1 and 50 guests.', closed:'Sorry, that day is closed.', full:'No availability for that time slot.', error:'Error sending. Please try again.' };
+
+    if(!name||!phone||!date||!time||!guests){ toast(err.fields); return; }
+    if(!rgpd){ toast(err.rgpd); return; }
+    var gn=parseInt(guests);
+    if(gn<1||gn>50){ toast(err.guests); return; }
+
+    /* Closed day check */
+    if(closedDates.indexOf(date)>-1){ toast(err.closed); return; }
+    var dow=new Date(date+'T12:00').getDay();
+    if(CLOSED_WEEKDAYS.indexOf(dow)>-1){ toast(err.closed); return; }
+
+    /* Capacity check */
+    if(MAX_GUESTS){
+        var r2=await db.from('reservations').select('guests').eq('date',date).eq('time',time).in('status',['pendiente','confirmada']);
+        var total=(r2.data||[]).reduce(function(s,x){return s+x.guests;},0);
+        if(total+gn>MAX_GUESTS){ toast(err.full); return; }
     }
-    function toggleLang() { applyLang(currentLang === 'es' ? 'en' : 'es'); }
 
-    /* ── FLATPICKR ── */
-    var closedDates = [];
-    var fpInstance = flatpickr('#date', {
-        locale: 'es',
-        minDate: 'today',
-        dateFormat: 'Y-m-d',
-        disableMobile: false,
-        disable: [function(date) {
-            var ds = date.getFullYear() + '-' + String(date.getMonth()+1).padStart(2,'0') + '-' + String(date.getDate()).padStart(2,'0');
-            return CLOSED_WEEKDAYS.indexOf(date.getDay()) > -1 || closedDates.indexOf(ds) > -1;
-        }]
-    });
-    // Cargar días cerrados desde Supabase
-    db.from('closed_dates').select('date').then(function(r) {
-        if (!r.error && r.data) {
-            closedDates = r.data.map(function(x) { return x.date; });
-            fpInstance.set('disable', [function(date) {
-                var ds = date.getFullYear() + '-' + String(date.getMonth()+1).padStart(2,'0') + '-' + String(date.getDate()).padStart(2,'0');
-                return CLOSED_WEEKDAYS.indexOf(date.getDay()) > -1 || closedDates.indexOf(ds) > -1;
-            }]);
-        }
-    });
+    var btn=document.getElementById('btn-sub');
+    btn.disabled=true; btn.querySelector('span').textContent=lang==='es'?'Enviando…':'Sending…';
 
-    /* ── CAPACITY CHECK ── */
-    async function checkCapacity() {
-        if (!MAX_GUESTS_SLOT) return;
-        var date = document.getElementById('date').value;
-        var time = document.getElementById('time').value;
-        var guests = parseInt(document.getElementById('guests').value) || 0;
-        if (!date || !time || !guests) { document.getElementById('capacity-warning').style.display='none'; return; }
-        var r = await db.from('reservations').select('guests').eq('date',date).eq('time',time).in('status',['pendiente','confirmada']);
-        if (r.error) return;
-        var total = (r.data||[]).reduce(function(s,x){return s+x.guests;},0);
-        var warn = document.getElementById('capacity-warning');
-        warn.style.display = (total + guests > MAX_GUESTS_SLOT) ? 'block' : 'none';
-    }
+    var ins=await db.from('reservations').insert([{name:name,phone:phone,email:email,date:date,time:time,guests:gn,notes:notes,status:'pendiente',restaurant:RESTO}]);
+    if(ins.error){ toast(err.error); btn.disabled=false; btn.querySelector('span').textContent=T[lang]['bs']; return; }
 
-    /* ── SUBMIT ── */
-    async function submitReservation() {
-        var name=document.getElementById('name').value.trim(), phone=document.getElementById('phone').value.trim(),
-            email=document.getElementById('email').value.trim(), date=document.getElementById('date').value,
-            time=document.getElementById('time').value, guests=document.getElementById('guests').value,
-            notes=document.getElementById('notes').value.trim(), rgpd=document.getElementById('rgpd').checked;
-        if (!name||!phone||!date||!time||!guests) { showToast(currentLang==='es'?'Por favor rellena todos los campos obligatorios.':'Please fill in all required fields.'); return; }
-        if (!rgpd) { showToast(currentLang==='es'?'Debes aceptar la política de privacidad.':'You must accept the privacy policy.'); return; }
-        var gn=parseInt(guests);
-        if (gn<1||gn>50) { showToast(currentLang==='es'?'Entre 1 y 50 personas.':'Between 1 and 50 guests.'); return; }
-        if (closedDates.indexOf(date) > -1) { showToast(currentLang==='es'?'Lo sentimos, ese día está cerrado.':'Sorry, that day is closed.'); return; }
-        if (MAX_GUESTS_SLOT) {
-            var r2=await db.from('reservations').select('guests').eq('date',date).eq('time',time).in('status',['pendiente','confirmada']);
-            var total=(r2.data||[]).reduce(function(s,x){return s+x.guests;},0);
-            if (total+gn>MAX_GUESTS_SLOT) { showToast(currentLang==='es'?'Sin aforo disponible para ese horario.':'No availability for that time slot.'); return; }
-        }
-        var btn=document.getElementById('submit-btn'); btn.disabled=true; btn.textContent=currentLang==='es'?'Enviando…':'Sending…';
-        var res=await db.from('reservations').insert([{name:name,phone:phone,email:email,date:date,time:time,guests:gn,notes:notes,status:'pendiente',restaurant:RESTAURANT_NAME}]);
-        if (res.error) { showToast(currentLang==='es'?'Error al enviar. Inténtalo de nuevo.':'Error sending. Please try again.'); btn.disabled=false; btn.textContent=currentLang==='es'?'Solicitar reserva':'Book now'; return; }
-        var df=new Date(date+'T12:00').toLocaleDateString(currentLang==='es'?'es-ES':'en-GB',{weekday:'long',day:'numeric',month:'long'});
-        emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,{restaurant_name:RESTAURANT_NAME,from_name:name,phone:phone,client_email:email||'No indicado',date:df,time:time,guests:gn,notes:notes||'Ninguna'}).catch(function(){});
-        document.getElementById('form-section').style.display='none';
-        document.getElementById('success-card').style.display='block';
-        document.getElementById('success-name').textContent=name.split(' ')[0];
-        document.getElementById('success-detail').innerHTML='📅 '+df.charAt(0).toUpperCase()+df.slice(1)+' a las '+time+'<br>👥 '+gn+(gn===1?(currentLang==='es'?' persona':' person'):(currentLang==='es'?' personas':' people'))+(notes?'<br>📝 '+notes:'');
-    }
-    function resetForm() {
-        document.getElementById('form-section').style.display='block'; document.getElementById('success-card').style.display='none';
-        document.getElementById('submit-btn').disabled=false; document.getElementById('submit-btn').textContent=currentLang==='es'?'Solicitar reserva':'Book now';
-        fpInstance.clear(); document.getElementById('rgpd').checked=false; document.getElementById('capacity-warning').style.display='none';
-        ['name','phone','email','time','guests','notes'].forEach(function(id){document.getElementById(id).value='';});
-    }
-    function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(function(){t.style.display='none';},3500);}
+    var df=new Date(date+'T12:00').toLocaleDateString(lang==='es'?'es-ES':'en-GB',{weekday:'long',day:'numeric',month:'long'});
+    emailjs.send(EJS.svc,EJS.tpl,{restaurant_name:RESTO,from_name:name,phone:phone,client_email:email||'No indicado',date:df,time:time,guests:gn,notes:notes||'Ninguna'}).catch(function(){});
+
+    document.getElementById('form-wrap').style.display='none';
+    document.getElementById('success').style.display='block';
+    document.getElementById('sname').textContent=name.split(' ')[0];
+    document.getElementById('sdetail').innerHTML='📅 '+df.charAt(0).toUpperCase()+df.slice(1)+' · '+time+'<br>👥 '+gn+(gn===1?(lang==='es'?' persona':' person'):(lang==='es'?' personas':' people'))+(notes?'<br>📝 '+notes:'');
+}
+
+function resetForm(){
+    document.getElementById('form-wrap').style.display='block';
+    document.getElementById('success').style.display='none';
+    document.getElementById('btn-sub').disabled=false;
+    document.getElementById('btn-sub').querySelector('span').textContent=T[lang]['bs'];
+    document.getElementById('warn-cap').style.display='none';
+    ['name','phone','email','time','guests','notes'].forEach(function(id){ document.getElementById(id).value=''; });
+    if(fp) fp.clear();
+    document.getElementById('rgpd').checked=false;
+}
+
+function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'; setTimeout(function(){ t.style.display='none'; },3500); }
 </script>
 </body>
 </html>
