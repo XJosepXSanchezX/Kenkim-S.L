@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservas — Mi Restaurante</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --midnight: #1A1F2E;
+            --amber: #C9995A;
+            --cream: #F7F5F0;
+            --text: #2C2C2C;
+            --muted: #888;
+            --border: #E2DDD6;
+            --success: #4A7C6F;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--cream);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--midnight);
+            padding: 3rem 1.5rem 2.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--amber), transparent);
+        }
+
+        .header-eyebrow {
+            font-size: 0.68rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--amber);
+            margin-bottom: 0.75rem;
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            color: var(--cream);
+            font-weight: 400;
+            line-height: 1.1;
+        }
+
+        .divider {
+            width: 40px;
+            height: 1px;
+            background: var(--amber);
+            margin: 1.25rem auto;
+        }
+
+        .header-sub {
+            color: rgba(247,245,240,0.5);
+            font-size: 0.85rem;
+            font-weight: 300;
+        }
+
+        .container {
+            max-width: 540px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem 4rem;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: var(--midnight);
+            margin-bottom: 1.75rem;
+            text-align: center;
+        }
+
+        .form-grid { display: grid; gap: 1.25rem; }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 420px) { .form-row { grid-template-columns: 1fr; } }
+
+        .field label {
+            display: block;
+            font-size: 0.68rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+        }
+
+        .field input,
+        .field select,
+        .field textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text);
+            background: white;
+            transition: border-color 0.2s;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .field input:focus,
+        .field select:focus,
+        .field textarea:focus {
+            outline: none;
+            border-color: var(--amber);
+            box-shadow: 0 0 0 3px rgba(201,153,90,0.1);
+        }
+
+        .field textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .field select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--midnight);
+            color: var(--cream);
+            border: none;
+            border-radius: 4px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 0.5rem;
+        }
+
+        .submit-btn:hover { background: #2d3348; }
+        .submit-btn:active { transform: scale(0.99); }
+        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* Success */
+        .success-card {
+            display: none;
+            text-align: center;
+            padding: 3rem 1.5rem;
+            background: white;
+            border-radius: 8px;
+            border-top: 3px solid var(--success);
+        }
+
+        .success-icon {
+            width: 52px; height: 52px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.25rem;
+            color: white;
+            font-size: 1.4rem;
+        }
+
+        .success-card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: var(--midnight);
+            margin-bottom: 0.5rem;
+        }
+
+        .success-card p { color: var(--muted); font-size: 0.875rem; line-height: 1.6; }
+
+        .success-detail {
+            margin-top: 1.5rem;
+            padding: 1rem 1.25rem;
+            background: var(--cream);
+            border-radius: 4px;
+            font-size: 0.875rem;
+            line-height: 1.9;
+            color: var(--text);
+        }
+
+        .new-reservation-btn {
+            margin-top: 1.5rem;
+            padding: 0.75rem 2rem;
+            border: 1px solid var(--midnight);
+            background: transparent;
+            color: var(--midnight);
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.78rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #c0392b;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            display: none;
+            z-index: 100;
+            white-space: nowrap;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--muted);
+            font-size: 0.75rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer a { color: var(--midnight); text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <p class="header-eyebrow">Bienvenido</p>
+    <h1>Mi Restaurante</h1>
+    <div class="divider"></div>
+    <p class="header-sub">Reserve su mesa en segundos</p>
+</header>
+
+<div class="container">
+
+    <!-- Formulario -->
+    <div id="form-section">
+        <p class="section-title">Solicitar reserva</p>
+
+        <div class="form-grid">
+
+            <div class="form-row">
+                <div class="field">
+                    <label for="name">Nombre *</label>
+                    <input type="text" id="name" placeholder="Tu nombre" required autocomplete="name">
+                </div>
+                <div class="field">
+                    <label for="phone">Teléfono *</label>
+                    <input type="tel" id="phone" placeholder="6XX XXX XXX" required autocomplete="tel">
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="email">Email <span style="color:var(--border);font-style:italic">(opcional)</span></label>
+                <input type="email" id="email" placeholder="para enviarte confirmación" autocomplete="email">
+            </div>
+
+            <div class="form-row">
+                <div class="field">
+                    <label for="date">Fecha *</label>
+                    <input type="date" id="date" required>
+                </div>
+                <div class="field">
+                    <label for="time">Hora *</label>
+                    <select id="time" required>
+                        <option value="">Seleccionar</option>
+                        <optgroup label="— Comida —">
+                            <option value="13:00">13:00</option>
+                            <option value="13:30">13:30</option>
+                            <option value="14:00">14:00</option>
+                            <option value="14:30">14:30</option>
+                            <option value="15:00">15:00</option>
+                        </optgroup>
+                        <optgroup label="— Cena —">
+                            <option value="20:00">20:00</option>
+                            <option value="20:30">20:30</option>
+                            <option value="21:00">21:00</option>
+                            <option value="21:30">21:30</option>
+                            <option value="22:00">22:00</option>
+                        </optgroup>
+                    </select>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="guests">Comensales *</label>
+                <select id="guests" required>
+                    <option value="">Número de personas</option>
+                    <option value="1">1 persona</option>
+                    <option value="2">2 personas</option>
+                    <option value="3">3 personas</option>
+                    <option value="4">4 personas</option>
+                    <option value="5">5 personas</option>
+                    <option value="6">6 personas</option>
+                    <option value="7">7 personas</option>
+                    <option value="8">8 personas</option>
+                    <option value="9">9 personas</option>
+                    <option value="10">10 personas</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="notes">Notas especiales <span style="color:var(--border);font-style:italic">(opcional)</span></label>
+                <textarea id="notes" placeholder="Alergias, ocasión especial, preferencia de mesa…"></textarea>
+            </div>
+
+            <button class="submit-btn" id="submit-btn" onclick="submitReservation()">
+                Solicitar reserva
+            </button>
+
+        </div>
+    </div>
+
+    <!-- Éxito -->
+    <div class="success-card" id="success-card">
+        <div class="success-icon">✓</div>
+        <h2>¡Reserva recibida!</h2>
+        <p>Gracias, <strong id="success-name"></strong>. Nos pondremos en contacto contigo para confirmar.</p>
+        <div class="success-detail" id="success-detail"></div>
+        <button class="new-reservation-btn" onclick="resetForm()">Hacer otra reserva</button>
+    </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer class="footer">
+    ¿Grupo grande o evento especial? Llámanos al
+    <a href="tel:+34600000000">600 000 000</a>
+</footer>
+
+<script>
+    // ════════════════════════════════════════════════
+    //  ⚙️  CONFIGURA AQUÍ TUS DATOS DE SUPABASE
+    // ════════════════════════════════════════════════
+    const SUPABASE_URL  = 'https://axqptiwackqbtkqpylzm.supabase.co';
+    const SUPABASE_KEY  = 'sb_publishable_JqZlwNT9tHPPKsIYDGurQQ_JQZeGoLd';
+    // ════════════════════════════════════════════════
+
+    const { createClient } = supabase;
+    const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // Fecha mínima = hoy
+    const dateInput = document.getElementById('date');
+    dateInput.min = new Date().toISOString().split('T')[0];
+
+    async function submitReservation() {
+        const name   = document.getElementById('name').value.trim();
+        const phone  = document.getElementById('phone').value.trim();
+        const email  = document.getElementById('email').value.trim();
+        const date   = document.getElementById('date').value;
+        const time   = document.getElementById('time').value;
+        const guests = document.getElementById('guests').value;
+        const notes  = document.getElementById('notes').value.trim();
+
+        if (!name || !phone || !date || !time || !guests) {
+            showToast('Por favor rellena todos los campos obligatorios.');
+            return;
+        }
+
+        const btn = document.getElementById('submit-btn');
+        btn.disabled = true;
+        btn.textContent = 'Enviando…';
+
+        const { error } = await db.from('reservations').insert([{
+            name, phone, email, date, time,
+            guests: parseInt(guests),
+            notes,
+            status: 'pendiente'
+        }]);
+
+        if (error) {
+            showToast('Error al enviar. Por favor inténtalo de nuevo.');
+            btn.disabled = false;
+            btn.textContent = 'Solicitar reserva';
+            return;
+        }
+
+        // Mostrar pantalla de éxito
+        document.getElementById('form-section').style.display = 'none';
+        document.getElementById('success-card').style.display = 'block';
+        document.getElementById('success-name').textContent = name.split(' ')[0];
+
+        const dateObj = new Date(date + 'T12:00');
+        const dateFmt = dateObj.toLocaleDateString('es-ES', {
+            weekday: 'long', day: 'numeric', month: 'long'
+        });
+
+        document.getElementById('success-detail').innerHTML =
+            `📅 ${dateFmt.charAt(0).toUpperCase() + dateFmt.slice(1)} a las ${time}<br>
+             👥 ${guests} ${guests == 1 ? 'persona' : 'personas'}
+             ${notes ? `<br>📝 ${notes}` : ''}`;
+    }
+
+    function resetForm() {
+        document.getElementById('form-section').style.display = 'block';
+        document.getElementById('success-card').style.display = 'none';
+        document.getElementById('submit-btn').disabled = false;
+        document.getElementById('submit-btn').textContent = 'Solicitar reserva';
+        ['name','phone','email','date','time','guests','notes'].forEach(id => {
+            document.getElementById(id).value = '';
+        });
+    }
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.style.display = 'block';
+        setTimeout(() => t.style.display = 'none', 3500);
+    }
+</script>
+
+</body>
+</html>
