@@ -11,43 +11,27 @@
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg:         #07070F;
-            --surface:    #0D0D1A;
-            --neon:       #4FACFE;
-            --neon-dim:   rgba(79,172,254,.12);
-            --neon-glow:  rgba(79,172,254,.42);
-            --text:       #F0EDE8;
-            --muted:      rgba(240,237,232,.4);
-            --border:     rgba(79,172,254,.18);
-            --success:    #00D4AA;
-            --success-glow: rgba(0,212,170,.35);
-        }
+        :root { --bg:#07070F; --surface:#0D0D1A; --neon:#4FACFE; --neon-dim:rgba(79,172,254,.12); --neon-glow:rgba(79,172,254,.42); --text:#F0EDE8; --muted:rgba(240,237,232,.4); --border:rgba(79,172,254,.18); --success:#00D4AA; --success-glow:rgba(0,212,170,.35); }
         * { box-sizing:border-box; margin:0; padding:0; }
         body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
-
-        /* BACK */
         .back-link { display:inline-flex; align-items:center; gap:.35rem; padding:.65rem 1rem; color:var(--muted); text-decoration:none; font-size:.75rem; letter-spacing:.06em; transition:color .2s; border-bottom:1px solid rgba(79,172,254,.08); width:100%; }
         .back-link:hover { color:var(--neon); }
-
-        /* HEADER */
         .header { background:var(--bg); padding:0 1.5rem 3rem; text-align:center; position:relative; overflow:hidden; }
         .header::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--neon),transparent); box-shadow:0 0 20px var(--neon-glow); }
         .header::after { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(79,172,254,.07) 0%,transparent 70%); pointer-events:none; }
+        .header-top { display:flex; align-items:center; justify-content:space-between; }
         .header-eyebrow { font-size:.65rem; letter-spacing:.35em; text-transform:uppercase; color:var(--neon); margin-bottom:.9rem; padding-top:2rem; opacity:.9; }
         .header h1 { font-family:'Playfair Display',serif; font-size:clamp(2.2rem,6vw,3.8rem); color:var(--text); font-weight:400; line-height:1.05; text-shadow:0 0 40px var(--neon-glow),0 0 80px rgba(79,172,254,.2); }
         .header h1 em { font-style:italic; color:var(--neon); text-shadow:0 0 20px var(--neon-glow),0 0 40px var(--neon-glow); }
         .divider { width:40px; height:1px; background:var(--neon); margin:1.25rem auto; box-shadow:0 0 8px var(--neon-glow); }
         .header-sub { color:var(--muted); font-size:.85rem; font-weight:300; letter-spacing:.05em; }
-
-        /* CONTAINER */
+        /* LANG TOGGLE */
+        .lang-btn { position:absolute; top:1rem; right:1rem; background:rgba(79,172,254,.12); border:1px solid var(--border); color:var(--neon); padding:.35rem .7rem; border-radius:6px; cursor:pointer; font-size:.72rem; font-family:'Inter',sans-serif; letter-spacing:.06em; transition:box-shadow .2s; z-index:5; }
+        .lang-btn:hover { box-shadow:0 0 10px rgba(79,172,254,.3); }
         .container { max-width:540px; margin:0 auto; padding:2.5rem 1.5rem 3rem; }
         .section-title { font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:400; color:var(--text); margin-bottom:1.75rem; text-align:center; opacity:.9; }
-
-        /* FORM */
         .form-grid { display:grid; gap:1.25rem; }
         .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
-
         .field label { display:block; font-size:.65rem; letter-spacing:.18em; text-transform:uppercase; color:var(--neon); margin-bottom:.4rem; font-weight:500; opacity:.8; }
         .field input,.field select,.field textarea { width:100%; padding:.8rem 1rem; background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:6px; font-family:'Inter',sans-serif; font-size:1rem; color:var(--text); transition:border-color .2s,box-shadow .2s,background .2s; -webkit-appearance:none; appearance:none; }
         .field input::placeholder,.field textarea::placeholder { color:var(--muted); }
@@ -58,15 +42,18 @@
         input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button { -webkit-appearance:none; }
         input[type=number] { -moz-appearance:textfield; }
         .guests-hint { font-size:.72rem; color:var(--muted); margin-top:.3rem; }
-        .date-field input { cursor:pointer; }
-
-        /* BUTTON */
+        /* RGPD */
+        .rgpd-field { display:flex; align-items:flex-start; gap:.65rem; }
+        .rgpd-field input[type=checkbox] { width:18px; height:18px; flex-shrink:0; margin-top:2px; accent-color:var(--neon); cursor:pointer; }
+        .rgpd-field span { font-size:.78rem; color:var(--muted); line-height:1.5; }
+        .rgpd-field a { color:var(--neon); text-decoration:none; }
+        .rgpd-field a:hover { text-decoration:underline; }
+        /* CAPACITY WARNING */
+        .capacity-warning { background:rgba(255,100,0,.1); border:1px solid rgba(255,100,0,.3); border-radius:6px; padding:.75rem 1rem; font-size:.8rem; color:#FF8C42; display:none; }
         .submit-btn { width:100%; padding:1rem; background:var(--neon); color:#ffffff; border:none; border-radius:6px; font-family:'Inter',sans-serif; font-size:.82rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; cursor:pointer; transition:box-shadow .2s,filter .2s,transform .1s; margin-top:.5rem; }
         .submit-btn:hover { filter:brightness(1.12); box-shadow:0 0 28px var(--neon-glow),0 0 55px rgba(79,172,254,.2); }
         .submit-btn:active { transform:scale(.99); }
         .submit-btn:disabled { opacity:.5; cursor:not-allowed; box-shadow:none; filter:none; }
-
-        /* SUCCESS */
         .success-card { display:none; text-align:center; padding:3rem 1.5rem; background:rgba(0,212,170,.05); border-radius:12px; border:1px solid rgba(0,212,170,.25); box-shadow:0 0 30px rgba(0,212,170,.08); }
         .success-icon { width:56px; height:56px; background:var(--success); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1.25rem; color:#07070F; font-size:1.5rem; box-shadow:0 0 20px var(--success-glow); }
         .success-card h2 { font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:400; color:var(--text); margin-bottom:.5rem; }
@@ -74,8 +61,6 @@
         .success-detail { margin-top:1.5rem; padding:1rem 1.25rem; background:rgba(255,255,255,.04); border-radius:6px; font-size:.875rem; line-height:1.9; color:var(--text); border:1px solid var(--border); }
         .new-reservation-btn { margin-top:1.5rem; padding:.75rem 2rem; border:1px solid var(--neon); background:transparent; color:var(--neon); border-radius:6px; cursor:pointer; font-family:'Inter',sans-serif; font-size:.78rem; letter-spacing:.1em; text-transform:uppercase; transition:box-shadow .2s; }
         .new-reservation-btn:hover { box-shadow:0 0 15px rgba(79,172,254,.3); }
-
-        /* LOCATION */
         .location-section { background:var(--surface); border-top:1px solid var(--border); }
         .location-container { max-width:540px; margin:0 auto; padding:2rem 1.5rem; }
         .location-label { font-size:.65rem; letter-spacing:.25em; text-transform:uppercase; color:var(--neon); margin-bottom:.4rem; opacity:.8; }
@@ -84,11 +69,7 @@
         .maps-link { display:inline-flex; align-items:center; justify-content:center; gap:.4rem; color:var(--neon); text-decoration:none; font-size:.8rem; font-weight:500; margin-bottom:1.25rem; padding:.55rem 1rem; border:1px solid rgba(79,172,254,.3); border-radius:6px; width:100%; transition:box-shadow .2s; }
         .maps-link:hover { box-shadow:0 0 14px rgba(79,172,254,.3); }
         .location-map iframe { width:100%; height:220px; border:1px solid var(--border); border-radius:8px; display:block; filter:grayscale(80%) invert(90%); }
-
-        /* TOAST */
         .toast { position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%); background:#c0392b; color:white; padding:.75rem 1.5rem; border-radius:6px; font-size:.85rem; display:none; z-index:100; white-space:nowrap; }
-
-        /* FOOTER */
         .footer { text-align:center; padding:1.75rem 1.5rem; color:var(--muted); font-size:.78rem; border-top:1px solid rgba(79,172,254,.08); background:var(--bg); }
         .footer-phone { margin-bottom:1rem; }
         .footer-phone a { color:var(--neon); text-decoration:none; font-weight:500; }
@@ -96,10 +77,7 @@
         .social-links a { display:flex; align-items:center; gap:.35rem; color:var(--muted); text-decoration:none; font-size:.78rem; transition:color .2s; }
         .social-links a:hover { color:var(--neon); }
         .social-icon { width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:1rem; }
-        .social-icon.ig  { background:#E1306C; }
-        .social-icon.tt  { background:#010101; border:1px solid #333; }
-        .social-icon.web { background:rgba(79,172,254,.15); border:1px solid var(--border); }
-
+        .social-icon.ig { background:#E1306C; } .social-icon.tt { background:#010101; border:1px solid #333; } .social-icon.web { background:rgba(79,172,254,.15); border:1px solid var(--border); }
         /* FLATPICKR DARK */
         .flatpickr-calendar { background:#0D0D1A !important; border:1px solid rgba(79,172,254,.22) !important; box-shadow:0 0 40px rgba(79,172,254,.12),0 16px 50px rgba(0,0,0,.6) !important; border-radius:14px !important; font-family:'Inter',sans-serif; overflow:hidden; }
         .flatpickr-months,.flatpickr-months .flatpickr-month,.flatpickr-weekdays,.flatpickr-weekday { background:#0A0A16 !important; }
@@ -107,104 +85,89 @@
         .flatpickr-current-month { color:#F0EDE8 !important; font-size:1rem; padding-top:12px; }
         .flatpickr-current-month .flatpickr-monthDropdown-months { background:#0A0A16 !important; color:#F0EDE8; }
         .flatpickr-current-month input.cur-year { color:#F0EDE8 !important; }
-        .flatpickr-weekday { color:rgba(79,172,254,.5) !important; font-size:.68rem; letter-spacing:.06em; }
-        .flatpickr-prev-month,.flatpickr-next-month { color:var(--neon) !important; fill:var(--neon) !important; padding:10px 14px; }
-        .flatpickr-prev-month svg,.flatpickr-next-month svg { fill:var(--neon) !important; }
+        .flatpickr-weekday { color:rgba(79,172,254,.5) !important; font-size:.68rem; }
+        .flatpickr-prev-month,.flatpickr-next-month { color:var(--neon) !important; } .flatpickr-prev-month svg,.flatpickr-next-month svg { fill:var(--neon) !important; }
         .flatpickr-day { color:#F0EDE8 !important; border-radius:8px !important; border:none !important; }
-        .flatpickr-day:hover { background:rgba(79,172,254,.12) !important; border:none !important; }
+        .flatpickr-day:hover { background:rgba(79,172,254,.12) !important; }
         .flatpickr-day.today { border:1px solid rgba(79,172,254,.5) !important; }
-        .flatpickr-day.selected,.flatpickr-day.selected:hover { background:var(--neon) !important; border-color:var(--neon) !important; color:#ffffff !important; font-weight:700 !important; box-shadow:0 0 10px rgba(79,172,254,.5); }
+        .flatpickr-day.selected,.flatpickr-day.selected:hover { background:var(--neon) !important; border-color:var(--neon) !important; color:#ffffff !important; font-weight:700 !important; }
         .flatpickr-day.flatpickr-disabled { color:rgba(240,237,232,.18) !important; }
-        .numInputWrapper span svg { fill:rgba(79,172,254,.6) !important; }
-        .numInput { color:#F0EDE8 !important; }
+        .numInputWrapper span svg { fill:rgba(79,172,254,.6) !important; } .numInput { color:#F0EDE8 !important; }
         .flatpickr-innerContainer { background:#0D0D1A; }
-
         /* MOBILE */
-        @media (max-width: 640px) {
+        @media (max-width:640px) {
             .back-link { font-size:.72rem; padding:.5rem .85rem; }
-            .header { padding:0 1rem 2rem; }
-            .header h1 { font-size:2rem; }
+            .header { padding:0 1rem 2rem; } .header h1 { font-size:2rem; }
             .container { padding:1.75rem 1rem 2.5rem; }
-            .section-title { font-size:1.05rem; margin-bottom:1.25rem; }
             .field input,.field select,.field textarea { font-size:1rem; padding:.75rem .9rem; }
-            .submit-btn { min-height:52px; }
-            .new-reservation-btn { min-height:48px; width:100%; }
-            .footer { padding:1.25rem 1rem; }
-            .social-links { flex-wrap:wrap; gap:.6rem; }
-            .location-container { padding:1.5rem 1rem; }
-            .location-map iframe { height:180px; }
+            .submit-btn { min-height:52px; } .new-reservation-btn { min-height:48px; width:100%; }
+            .footer { padding:1.25rem 1rem; } .social-links { flex-wrap:wrap; gap:.6rem; }
+            .location-container { padding:1.5rem 1rem; } .location-map iframe { height:180px; }
         }
-        @media (max-width: 380px) {
-            .form-row { grid-template-columns:1fr; }
-            .header h1 { font-size:1.8rem; }
-        }
+        @media (max-width:380px) { .form-row { grid-template-columns:1fr; } .header h1 { font-size:1.8rem; } }
     </style>
 </head>
 <body>
-
 <header class="header">
-    <a class="back-link" href="/">← Todos los restaurantes</a>
+    <div class="header-top">
+        <a class="back-link" href="/">← <span data-t="back">Todos los restaurantes</span></a>
+        <button class="lang-btn" onclick="toggleLang()" id="lang-btn">🇬🇧 EN</button>
+    </div>
     <p class="header-eyebrow">🥂 Grupo KenKim</p>
     <h1>Otitanuz <em>Bar</em></h1>
     <div class="divider"></div>
-    <p class="header-sub">Reserve su mesa en segundos</p>
+    <p class="header-sub" data-t="sub">Reserve su mesa en segundos</p>
 </header>
 
 <div class="container">
     <div id="form-section">
-        <p class="section-title">Solicitar reserva</p>
+        <p class="section-title" data-t="title">Solicitar reserva</p>
         <div class="form-grid">
             <div class="form-row">
-                <div class="field"><label for="name">Nombre *</label><input type="text" id="name" placeholder="Tu nombre" required autocomplete="name"></div>
-                <div class="field"><label for="phone">Teléfono *</label><input type="tel" id="phone" placeholder="6XX XXX XXX" required autocomplete="tel"></div>
+                <div class="field"><label for="name" data-t="lbl-name">Nombre *</label><input type="text" id="name" data-t-ph="ph-name" placeholder="Tu nombre" required autocomplete="name"></div>
+                <div class="field"><label for="phone" data-t="lbl-phone">Teléfono *</label><input type="tel" id="phone" data-t-ph="ph-phone" placeholder="6XX XXX XXX" required autocomplete="tel"></div>
             </div>
-            <div class="field"><label for="email">Email <span style="opacity:.4;font-style:italic">(opcional)</span></label><input type="email" id="email" placeholder="para enviarte confirmación" autocomplete="email"></div>
+            <div class="field"><label for="email">Email <span style="opacity:.4;font-style:italic" data-t="optional">(opcional)</span></label><input type="email" id="email" data-t-ph="ph-email" placeholder="para enviarte confirmación" autocomplete="email"></div>
             <div class="form-row">
-                <div class="field date-field"><label for="date">Fecha *</label><input type="text" id="date" placeholder="Seleccionar fecha" required readonly></div>
-                <div class="field"><label for="time">Hora *</label>
+                <div class="field"><label for="date" data-t="lbl-date">Fecha *</label><input type="text" id="date" data-t-ph="ph-date" placeholder="Seleccionar fecha" required readonly></div>
+                <div class="field"><label for="time" data-t="lbl-time">Hora *</label>
                     <select id="time" required>
-                        <option value="">Seleccionar</option>
-                        <optgroup label="— Comida —">
-                            <option value="13:00">13:00</option><option value="13:30">13:30</option>
-                            <option value="14:00">14:00</option><option value="14:30">14:30</option><option value="15:00">15:00</option>
-                        </optgroup>
-                        <optgroup label="— Cena —">
-                            <option value="20:00">20:00</option><option value="20:30">20:30</option>
-                            <option value="21:00">21:00</option><option value="21:30">21:30</option><option value="22:00">22:00</option>
-                        </optgroup>
+                        <option value="" data-t="select">Seleccionar</option>
+                        <optgroup label="— Comida —"><option value="13:00">13:00</option><option value="13:30">13:30</option><option value="14:00">14:00</option><option value="14:30">14:30</option><option value="15:00">15:00</option></optgroup>
+                        <optgroup label="— Cena —"><option value="20:00">20:00</option><option value="20:30">20:30</option><option value="21:00">21:00</option><option value="21:30">21:30</option><option value="22:00">22:00</option></optgroup>
                     </select>
                 </div>
             </div>
-            <div class="field"><label for="guests">Comensales *</label><input type="number" id="guests" min="1" max="50" placeholder="Número de personas" required><p class="guests-hint">Máximo 50 personas. Para eventos, llámanos.</p></div>
-            <div class="field"><label for="notes">Notas especiales <span style="opacity:.4;font-style:italic">(opcional)</span></label><textarea id="notes" placeholder="Alergias, ocasión especial, preferencia de mesa…"></textarea></div>
-            <button class="submit-btn" id="submit-btn" onclick="submitReservation()">Solicitar reserva</button>
+            <div class="field"><label for="guests" data-t="lbl-guests">Comensales *</label><input type="number" id="guests" min="1" max="50" data-t-ph="ph-guests" placeholder="Número de personas" required oninput="checkCapacity()"><p class="guests-hint" data-t="guests-hint">Máximo 50 personas. Para eventos, llámanos.</p></div>
+            <div class="capacity-warning" id="capacity-warning" data-t="cap-warn">⚠️ Aforo limitado para ese horario. Por favor elige otra hora o llámanos.</div>
+            <div class="field"><label for="notes" data-t="lbl-notes">Notas especiales <span style="opacity:.4;font-style:italic" data-t="optional">(opcional)</span></label><textarea id="notes" data-t-ph="ph-notes" placeholder="Alergias, ocasión especial, preferencia de mesa…"></textarea></div>
+            <div class="rgpd-field"><input type="checkbox" id="rgpd" required><span data-t="rgpd">He leído y acepto la <a href="/privacidad" target="_blank">política de privacidad</a> y el tratamiento de mis datos. *</span></div>
+            <button class="submit-btn" id="submit-btn" data-t="btn-submit" onclick="submitReservation()">Solicitar reserva</button>
         </div>
     </div>
     <div class="success-card" id="success-card">
         <div class="success-icon">✓</div>
-        <h2>¡Reserva recibida!</h2>
-        <p>Gracias, <strong id="success-name"></strong>. Nos pondremos en contacto contigo para confirmar.</p>
+        <h2 data-t="success-h2">¡Reserva recibida!</h2>
+        <p><span data-t="success-p">Gracias,</span> <strong id="success-name"></strong>. <span data-t="success-p2">Nos pondremos en contacto contigo para confirmar.</span></p>
         <div class="success-detail" id="success-detail"></div>
-        <button class="new-reservation-btn" onclick="resetForm()">Hacer otra reserva</button>
+        <button class="new-reservation-btn" data-t="btn-new" onclick="resetForm()">Hacer otra reserva</button>
     </div>
 </div>
 
 <section class="location-section">
     <div class="location-container">
-        <p class="location-label">📍 Dónde estamos</p>
+        <p class="location-label" data-t="loc-label">📍 Dónde estamos</p>
         <p class="location-address">Carrer de València, 2</p>
         <p class="location-city">Eixample · 08015 Barcelona</p>
-        <a class="maps-link" href="https://www.google.com/maps/place//data=!4m2!3m1!1s0x12a499fd278eba37:0x52eec9831b7f086e" target="_blank" rel="noopener">📍 Ver en Google Maps →</a>
-        <div class="location-map">
-            <iframe src="https://maps.google.com/maps?q=Carrer+de+Valencia,+2,+Barcelona&output=embed&hl=es" width="100%" height="220" style="border:0" allowfullscreen="" loading="lazy"></iframe>
-        </div>
+        <a class="maps-link" href="https://www.google.com/maps/place//data=!4m2!3m1!1s0x12a499fd278eba37:0x52eec9831b7f086e" target="_blank" rel="noopener"><span data-t="maps-link">📍 Ver en Google Maps →</span></a>
+        <div class="location-map"><iframe src="https://maps.google.com/maps?q=Carrer+de+Valencia,+2,+Barcelona&output=embed&hl=es" width="100%" height="220" style="border:0" allowfullscreen="" loading="lazy"></iframe></div>
     </div>
 </section>
 
 <div class="toast" id="toast"></div>
 
 <footer class="footer">
-    <div class="footer-phone">¿Grupo grande o evento especial? Llámanos al <a href="tel:+34636360655">636 360 655</a></div>
+    <div class="footer-phone"><span data-t="footer-cta">¿Grupo grande o evento especial? Llámanos al</span> <a href="tel:+34636360655">636 360 655</a></div>
     <div class="social-links">
         <a href="https://instagram.com/otitanuz_bar" target="_blank" rel="noopener"><span class="social-icon ig">📸</span> Instagram</a>
         <a href="https://tiktok.com/@otitanuz_bar" target="_blank" rel="noopener"><span class="social-icon tt">🎵</span> TikTok</a>
@@ -213,36 +176,102 @@
 </footer>
 
 <script>
+    /* ── CONFIG (editar aquí) ── */
+    var CLOSED_WEEKDAYS = 1; // 0=Dom 1=Lun 2=Mar 3=Mié 4=Jue 5=Vie 6=Sáb
+    var MAX_GUESTS_SLOT = 100;  // Aforo máximo de personas por turno (0 = sin límite)
+    /* ────────────────────────── */
+
     var SUPABASE_URL='https://axqptiwackqbtkqpylzm.supabase.co', SUPABASE_KEY='sb_publishable_JqZlwNT9tHPPKsIYDGurQQ_JQZeGoLd';
     var EMAILJS_PUBLIC_KEY='HFehV9yfugqgpbr5M', EMAILJS_SERVICE_ID='service_2p4kohv', EMAILJS_TEMPLATE_ID='template_2cqbwfi';
     var RESTAURANT_NAME='Otitanuz Bar';
     var db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
     emailjs.init(EMAILJS_PUBLIC_KEY);
-    var fpInstance=flatpickr('#date',{locale:'es',minDate:'today',dateFormat:'Y-m-d',disableMobile:false});
 
-    async function submitReservation(){
-        var name=document.getElementById('name').value.trim(),phone=document.getElementById('phone').value.trim(),
-            email=document.getElementById('email').value.trim(),date=document.getElementById('date').value,
-            time=document.getElementById('time').value,guests=document.getElementById('guests').value,
-            notes=document.getElementById('notes').value.trim();
-        if(!name||!phone||!date||!time||!guests){showToast('Por favor rellena todos los campos obligatorios.');return;}
+    /* ── TRANSLATIONS ── */
+    var T = {
+        es: { back:'Todos los restaurantes', sub:'Reserve su mesa en segundos', title:'Solicitar reserva', 'lbl-name':'Nombre *', 'lbl-phone':'Teléfono *', 'lbl-date':'Fecha *', 'lbl-time':'Hora *', 'lbl-guests':'Comensales *', 'lbl-notes':'Notas especiales', optional:'(opcional)', 'ph-name':'Tu nombre', 'ph-phone':'6XX XXX XXX', 'ph-email':'para enviarte confirmación', 'ph-date':'Seleccionar fecha', 'ph-guests':'Número de personas', 'ph-notes':'Alergias, ocasión especial, preferencia de mesa…', select:'Seleccionar', 'guests-hint':'Máximo 50 personas. Para eventos, llámanos.', rgpd:'He leído y acepto la <a href="/privacidad" target="_blank">política de privacidad</a> y el tratamiento de mis datos. *', 'btn-submit':'Solicitar reserva', 'success-h2':'¡Reserva recibida!', 'success-p':'Gracias,', 'success-p2':'Nos pondremos en contacto contigo para confirmar.', 'btn-new':'Hacer otra reserva', 'loc-label':'📍 Dónde estamos', 'maps-link':'📍 Ver en Google Maps →', 'footer-cta':'¿Grupo grande o evento especial? Llámanos al', 'cap-warn':'⚠️ Aforo limitado para ese horario. Por favor elige otra hora o llámanos.' },
+        en: { back:'All restaurants', sub:'Book your table in seconds', title:'Book a table', 'lbl-name':'Name *', 'lbl-phone':'Phone *', 'lbl-date':'Date *', 'lbl-time':'Time *', 'lbl-guests':'Guests *', 'lbl-notes':'Special notes', optional:'(optional)', 'ph-name':'Your name', 'ph-phone':'Your phone number', 'ph-email':'to send you a confirmation', 'ph-date':'Select a date', 'ph-guests':'Number of guests', 'ph-notes':'Allergies, special occasion, table preference…', select:'Select', 'guests-hint':'Max 50 people. For events, please call us.', rgpd:'I have read and accept the <a href="/privacidad" target="_blank">privacy policy</a> and the processing of my data. *', 'btn-submit':'Book now', 'success-h2':'Booking received!', 'success-p':'Thank you,', 'success-p2':'We will contact you shortly to confirm.', 'btn-new':'Make another booking', 'loc-label':'📍 Where we are', 'maps-link':'📍 View on Google Maps →', 'footer-cta':'Large group or special event? Call us at', 'cap-warn':'⚠️ Limited capacity for that time slot. Please choose another time or call us.' }
+    };
+    var currentLang = 'es';
+    function applyLang(lang) {
+        currentLang = lang;
+        document.getElementById('lang-btn').textContent = lang === 'es' ? '🇬🇧 EN' : '🇪🇸 ES';
+        document.querySelectorAll('[data-t]').forEach(function(el) {
+            var key = el.getAttribute('data-t');
+            if (T[lang][key] !== undefined) el.innerHTML = T[lang][key];
+        });
+        document.querySelectorAll('[data-t-ph]').forEach(function(el) {
+            var key = el.getAttribute('data-t-ph');
+            if (T[lang][key] !== undefined) el.placeholder = T[lang][key];
+        });
+        fpInstance.set('locale', lang === 'es' ? 'es' : 'default');
+    }
+    function toggleLang() { applyLang(currentLang === 'es' ? 'en' : 'es'); }
+
+    /* ── FLATPICKR ── */
+    var closedDates = [];
+    var fpInstance = flatpickr('#date', {
+        locale: 'es', minDate: 'today', dateFormat: 'Y-m-d', disableMobile: false,
+        disable: [function(date) {
+            var ds = date.getFullYear() + '-' + String(date.getMonth()+1).padStart(2,'0') + '-' + String(date.getDate()).padStart(2,'0');
+            return CLOSED_WEEKDAYS.indexOf(date.getDay()) > -1 || closedDates.indexOf(ds) > -1;
+        }]
+    });
+    // Cargar días cerrados desde Supabase
+    db.from('closed_dates').select('date').then(function(r) {
+        if (!r.error && r.data) {
+            closedDates = r.data.map(function(x) { return x.date; });
+            fpInstance.set('disable', [function(date) {
+                var ds = date.getFullYear() + '-' + String(date.getMonth()+1).padStart(2,'0') + '-' + String(date.getDate()).padStart(2,'0');
+                return CLOSED_WEEKDAYS.indexOf(date.getDay()) > -1 || closedDates.indexOf(ds) > -1;
+            }]);
+        }
+    });
+
+    /* ── CAPACITY CHECK ── */
+    async function checkCapacity() {
+        if (!MAX_GUESTS_SLOT) return;
+        var date = document.getElementById('date').value;
+        var time = document.getElementById('time').value;
+        var guests = parseInt(document.getElementById('guests').value) || 0;
+        if (!date || !time || !guests) { document.getElementById('capacity-warning').style.display='none'; return; }
+        var r = await db.from('reservations').select('guests').eq('date',date).eq('time',time).in('status',['pendiente','confirmada']);
+        if (r.error) return;
+        var total = (r.data||[]).reduce(function(s,x){return s+x.guests;},0);
+        var warn = document.getElementById('capacity-warning');
+        warn.style.display = (total + guests > MAX_GUESTS_SLOT) ? 'block' : 'none';
+    }
+
+    /* ── SUBMIT ── */
+    async function submitReservation() {
+        var name=document.getElementById('name').value.trim(), phone=document.getElementById('phone').value.trim(),
+            email=document.getElementById('email').value.trim(), date=document.getElementById('date').value,
+            time=document.getElementById('time').value, guests=document.getElementById('guests').value,
+            notes=document.getElementById('notes').value.trim(), rgpd=document.getElementById('rgpd').checked;
+        if (!name||!phone||!date||!time||!guests) { showToast(currentLang==='es'?'Por favor rellena todos los campos obligatorios.':'Please fill in all required fields.'); return; }
+        if (!rgpd) { showToast(currentLang==='es'?'Debes aceptar la política de privacidad.':'You must accept the privacy policy.'); return; }
         var gn=parseInt(guests);
-        if(gn<1||gn>50){showToast('El número de personas debe estar entre 1 y 50.');return;}
-        var btn=document.getElementById('submit-btn');btn.disabled=true;btn.textContent='Enviando…';
-        var r=await db.from('reservations').insert([{name:name,phone:phone,email:email,date:date,time:time,guests:gn,notes:notes,status:'pendiente',restaurant:RESTAURANT_NAME}]);
-        if(r.error){showToast('Error al enviar. Inténtalo de nuevo.');btn.disabled=false;btn.textContent='Solicitar reserva';return;}
-        var df=new Date(date+'T12:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
+        if (gn<1||gn>50) { showToast(currentLang==='es'?'Entre 1 y 50 personas.':'Between 1 and 50 guests.'); return; }
+        if (closedDates.indexOf(date) > -1) { showToast(currentLang==='es'?'Lo sentimos, ese día está cerrado.':'Sorry, that day is closed.'); return; }
+        if (MAX_GUESTS_SLOT) {
+            var r2=await db.from('reservations').select('guests').eq('date',date).eq('time',time).in('status',['pendiente','confirmada']);
+            var total=(r2.data||[]).reduce(function(s,x){return s+x.guests;},0);
+            if (total+gn>MAX_GUESTS_SLOT) { showToast(currentLang==='es'?'Sin aforo disponible para ese horario.':'No availability for that time slot.'); return; }
+        }
+        var btn=document.getElementById('submit-btn'); btn.disabled=true; btn.textContent=currentLang==='es'?'Enviando…':'Sending…';
+        var res=await db.from('reservations').insert([{name:name,phone:phone,email:email,date:date,time:time,guests:gn,notes:notes,status:'pendiente',restaurant:RESTAURANT_NAME}]);
+        if (res.error) { showToast(currentLang==='es'?'Error al enviar. Inténtalo de nuevo.':'Error sending. Please try again.'); btn.disabled=false; btn.textContent=currentLang==='es'?'Solicitar reserva':'Book now'; return; }
+        var df=new Date(date+'T12:00').toLocaleDateString(currentLang==='es'?'es-ES':'en-GB',{weekday:'long',day:'numeric',month:'long'});
         emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,{restaurant_name:RESTAURANT_NAME,from_name:name,phone:phone,client_email:email||'No indicado',date:df,time:time,guests:gn,notes:notes||'Ninguna'}).catch(function(){});
         document.getElementById('form-section').style.display='none';
         document.getElementById('success-card').style.display='block';
         document.getElementById('success-name').textContent=name.split(' ')[0];
-        document.getElementById('success-detail').innerHTML='📅 '+df.charAt(0).toUpperCase()+df.slice(1)+' a las '+time+'<br>👥 '+gn+(gn===1?' persona':' personas')+(notes?'<br>📝 '+notes:'');
+        document.getElementById('success-detail').innerHTML='📅 '+df.charAt(0).toUpperCase()+df.slice(1)+' a las '+time+'<br>👥 '+gn+(gn===1?(currentLang==='es'?' persona':' person'):(currentLang==='es'?' personas':' people'))+(notes?'<br>📝 '+notes:'');
     }
-    function resetForm(){
-        document.getElementById('form-section').style.display='block';
-        document.getElementById('success-card').style.display='none';
-        document.getElementById('submit-btn').disabled=false;document.getElementById('submit-btn').textContent='Solicitar reserva';
-        fpInstance.clear();
+    function resetForm() {
+        document.getElementById('form-section').style.display='block'; document.getElementById('success-card').style.display='none';
+        document.getElementById('submit-btn').disabled=false; document.getElementById('submit-btn').textContent=currentLang==='es'?'Solicitar reserva':'Book now';
+        fpInstance.clear(); document.getElementById('rgpd').checked=false; document.getElementById('capacity-warning').style.display='none';
         ['name','phone','email','time','guests','notes'].forEach(function(id){document.getElementById(id).value='';});
     }
     function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(function(){t.style.display='none';},3500);}
