@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin — Otitanuz Group</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --midnight: #1A1F2E;
+            --amber: #C9995A;
+            --cream: #F7F5F0;
+            --text: #2C2C2C;
+            --muted: #888;
+            --border: #E2DDD6;
+            --bg: #EDEAE5;
+            --success: #4A7C6F;
+            --danger: #C0392B;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        /* LOGIN */
+        .login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--midnight); }
+        .login-box { background: var(--cream); padding: 2.5rem; border-radius: 8px; width: 100%; max-width: 340px; text-align: center; }
+        .login-box h1 { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 400; color: var(--midnight); margin-bottom: 0.25rem; }
+        .login-box .eyebrow { font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 2rem; }
+        .login-box input { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: 4px; font-family: 'Inter', sans-serif; font-size: 0.9rem; margin-bottom: 0.75rem; text-align: center; }
+        .login-box input:focus { outline: none; border-color: var(--amber); }
+        .login-btn { width: 100%; padding: 0.8rem; background: var(--midnight); color: white; border: none; border-radius: 4px; font-family: 'Inter', sans-serif; font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
+        .login-btn:hover { background: #2d3348; }
+        .login-error { color: var(--danger); font-size: 0.8rem; margin-top: 0.6rem; min-height: 1.2em; }
+
+        /* ADMIN */
+        .admin-main { display: none; }
+        .admin-nav { background: var(--midnight); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--amber); }
+        .nav-brand { font-family: 'Playfair Display', serif; color: var(--cream); font-size: 1.1rem; font-weight: 400; }
+        .nav-brand small { display: block; font-family: 'Inter', sans-serif; font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--amber); margin-top: 1px; }
+        .nav-right { display: flex; gap: 0.6rem; align-items: center; }
+        .nav-btn { padding: 0.45rem 0.85rem; border-radius: 4px; cursor: pointer; font-size: 0.78rem; font-family: 'Inter', sans-serif; transition: background 0.2s; }
+        .btn-refresh { background: rgba(255,255,255,0.1); border: none; color: white; }
+        .btn-refresh:hover { background: rgba(255,255,255,0.2); }
+        .btn-logout { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.6); }
+        .btn-logout:hover { border-color: rgba(255,255,255,0.5); color: white; }
+
+        /* CONTAINER */
+        .admin-container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+
+        /* RESTAURANT TABS */
+        .resto-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+        .resto-tab { padding: 0.5rem 1.1rem; border-radius: 99px; border: 2px solid transparent; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 500; transition: all 0.15s; background: white; color: var(--muted); }
+        .resto-tab:hover { color: var(--midnight); }
+        .resto-tab.active { color: white; border-color: transparent; }
+        .resto-tab[data-resto=""]           { border-color: var(--midnight); }
+        .resto-tab[data-resto=""].active    { background: var(--midnight); color: white; }
+        .resto-tab[data-resto="Otitanuz Bar"].active   { background: #C9995A; }
+        .resto-tab[data-resto="La Hoguera"].active     { background: #C94A1A; }
+        .resto-tab[data-resto="Otitanuz Beach"].active { background: #1A8FA0; }
+
+        /* STATS */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .stat-card { background: white; border-radius: 8px; padding: 1.25rem; border-left: 3px solid var(--border); }
+        .stat-card.today   { border-left-color: var(--amber); }
+        .stat-card.week    { border-left-color: #7B9EC4; }
+        .stat-card.ok      { border-left-color: var(--success); }
+        .stat-card.pending { border-left-color: #E6A817; }
+        .stat-label { font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; }
+        .stat-value { font-size: 2.2rem; font-weight: 600; color: var(--midnight); line-height: 1; }
+
+        /* FILTERS */
+        .filters { background: white; border-radius: 8px; padding: 1rem 1.25rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-bottom: 1rem; }
+        .filter-group { display: flex; align-items: center; gap: 0.5rem; }
+        .filter-group label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); white-space: nowrap; }
+        .filters input, .filters select { padding: 0.45rem 0.75rem; border: 1px solid var(--border); border-radius: 4px; font-family: 'Inter', sans-serif; font-size: 0.85rem; color: var(--text); background: white; }
+        .filters input:focus, .filters select:focus { outline: none; border-color: var(--amber); }
+        .btn-clear { padding: 0.45rem 0.85rem; border: 1px solid var(--border); border-radius: 4px; background: transparent; cursor: pointer; font-size: 0.78rem; font-family: 'Inter', sans-serif; color: var(--muted); }
+        .btn-clear:hover { color: var(--midnight); border-color: var(--midnight); }
+
+        /* TABLE */
+        .table-card { background: white; border-radius: 8px; overflow: hidden; }
+        .table-header { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .table-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 400; color: var(--midnight); }
+        .count-badge { background: var(--midnight); color: white; font-size: 0.68rem; padding: 0.2rem 0.65rem; border-radius: 99px; font-weight: 500; }
+        table { width: 100%; border-collapse: collapse; }
+        th { font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); background: #FAFAF8; font-weight: 500; white-space: nowrap; }
+        td { padding: 0.85rem 1rem; border-bottom: 1px solid #F0EDE8; font-size: 0.875rem; vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #FAFAF8; }
+        .td-name { font-weight: 500; color: var(--midnight); }
+        .td-sub  { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+
+        /* STATUS BADGES */
+        .badge { display: inline-block; padding: 0.22rem 0.6rem; border-radius: 99px; font-size: 0.68rem; font-weight: 500; letter-spacing: 0.04em; }
+        .badge-pendiente  { background: #FFF3CD; color: #8A6900; }
+        .badge-confirmada { background: #D4EDDA; color: #1E5C3A; }
+        .badge-cancelada  { background: #FAE0E0; color: #8B1E1E; }
+
+        /* RESTAURANT BADGES */
+        .rbadge { display: inline-block; padding: 0.2rem 0.55rem; border-radius: 4px; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.04em; white-space: nowrap; }
+        .rbadge-bar   { background: #FFF0DC; color: #8A5A00; }
+        .rbadge-hog   { background: #FFE8E0; color: #8A2000; }
+        .rbadge-beach { background: #DFF4F7; color: #005F6E; }
+
+        /* ACTIONS */
+        .action-btn { padding: 0.28rem 0.6rem; border: 1px solid var(--border); border-radius: 4px; background: transparent; cursor: pointer; font-size: 0.68rem; font-family: 'Inter', sans-serif; color: var(--text); transition: all 0.15s; white-space: nowrap; }
+        .action-btn:hover         { background: var(--midnight); color: white; border-color: var(--midnight); }
+        .action-btn.confirm:hover { background: var(--success); color: white; border-color: var(--success); }
+        .action-btn.cancel:hover  { background: var(--danger);  color: white; border-color: var(--danger); }
+        .actions-cell { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+
+        .state-msg { text-align: center; padding: 3rem; color: var(--muted); font-size: 0.875rem; }
+
+        /* MOBILE */
+        @media (max-width: 640px) {
+            table, thead, tbody, th, td, tr { display: block; }
+            thead tr { display: none; }
+            td { padding: 0.4rem 1rem; border-bottom: none; font-size: 0.85rem; }
+            td::before { content: attr(data-label); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); display: block; margin-bottom: 2px; }
+            tr { border-bottom: 1px solid var(--border); padding: 0.75rem 0; }
+            tr:last-child { border-bottom: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="login-screen">
+    <div class="login-box">
+        <h1>Panel Admin</h1>
+        <p class="eyebrow">Otitanuz Group · Reservas</p>
+        <input type="password" id="pwd-input" placeholder="Contraseña"
+            onkeydown="if(event.key==='Enter') checkLogin()">
+        <button class="login-btn" onclick="checkLogin()">Entrar al panel</button>
+        <p class="login-error" id="login-error"></p>
+    </div>
+</div>
+
+<!-- ADMIN -->
+<div class="admin-main" id="admin-main">
+
+    <nav class="admin-nav">
+        <div class="nav-brand">
+            Otitanuz Group
+            <small>Panel de reservas</small>
+        </div>
+        <div class="nav-right">
+            <button class="nav-btn btn-refresh" onclick="loadReservations()">↻ Actualizar</button>
+            <button class="nav-btn btn-logout" onclick="logout()">Salir</button>
+        </div>
+    </nav>
+
+    <div class="admin-container">
+
+        <!-- Tabs por restaurante -->
+        <div class="resto-tabs">
+            <button class="resto-tab active" data-resto="" onclick="setRestoFilter(this)">🍽 Todos</button>
+            <button class="resto-tab" data-resto="Otitanuz Bar" onclick="setRestoFilter(this)">🥂 Otitanuz Bar</button>
+            <button class="resto-tab" data-resto="La Hoguera" onclick="setRestoFilter(this)">🔥 La Hoguera</button>
+            <button class="resto-tab" data-resto="Otitanuz Beach" onclick="setRestoFilter(this)">🏖 Otitanuz Beach</button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card today">
+                <div class="stat-label">Reservas hoy</div>
+                <div class="stat-value" id="stat-today">—</div>
+            </div>
+            <div class="stat-card week">
+                <div class="stat-label">Esta semana</div>
+                <div class="stat-value" id="stat-week">—</div>
+            </div>
+            <div class="stat-card ok">
+                <div class="stat-label">Confirmadas</div>
+                <div class="stat-value" id="stat-confirmed">—</div>
+            </div>
+            <div class="stat-card pending">
+                <div class="stat-label">Pendientes</div>
+                <div class="stat-value" id="stat-pending">—</div>
+            </div>
+        </div>
+
+        <!-- Filtros fecha/estado -->
+        <div class="filters">
+            <div class="filter-group">
+                <label>Fecha</label>
+                <input type="date" id="filter-date" onchange="applyFilters()">
+            </div>
+            <div class="filter-group">
+                <label>Estado</label>
+                <select id="filter-status" onchange="applyFilters()">
+                    <option value="">Todos</option>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="confirmada">Confirmada</option>
+                    <option value="cancelada">Cancelada</option>
+                </select>
+            </div>
+            <button class="btn-clear" onclick="clearFilters()">✕ Limpiar</button>
+        </div>
+
+        <!-- Tabla -->
+        <div class="table-card">
+            <div class="table-header">
+                <span class="table-title">Listado de reservas</span>
+                <span class="count-badge" id="count-badge">0</span>
+            </div>
+            <div id="table-body">
+                <div class="state-msg">Iniciando…</div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const SUPABASE_URL   = 'https://axqptiwackqbtkqpylzm.supabase.co';
+    const SUPABASE_KEY   = 'sb_publishable_JqZlwNT9tHPPKsIYDGurQQ_JQZeGoLd';
+    const ADMIN_PASSWORD = '@Kenkim2026';
+
+    const { createClient } = supabase;
+    const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let allReservations  = [];
+    let activeRestoFilter = '';
+
+    /* ── AUTH ── */
+    function checkLogin() {
+        if (document.getElementById('pwd-input').value === ADMIN_PASSWORD) {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('admin-main').style.display = 'block';
+            loadReservations();
+        } else {
+            document.getElementById('login-error').textContent = 'Contraseña incorrecta.';
+        }
+    }
+
+    function logout() {
+        document.getElementById('login-screen').style.display = 'flex';
+        document.getElementById('admin-main').style.display = 'none';
+        document.getElementById('pwd-input').value = '';
+        document.getElementById('login-error').textContent = '';
+    }
+
+    /* ── RESTAURANT TABS ── */
+    function setRestoFilter(btn) {
+        document.querySelectorAll('.resto-tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        activeRestoFilter = btn.dataset.resto;
+        applyFilters();
+    }
+
+    /* ── DATA ── */
+    async function loadReservations() {
+        document.getElementById('table-body').innerHTML = '<div class="state-msg">Cargando reservas…</div>';
+
+        const { data, error } = await db
+            .from('reservations')
+            .select('*')
+            .order('date', { ascending: true })
+            .order('time', { ascending: true });
+
+        if (error) {
+            document.getElementById('table-body').innerHTML =
+                '<div class="state-msg">❌ Error al cargar. Revisa la configuración de Supabase.</div>';
+            return;
+        }
+
+        allReservations = data || [];
+        updateStats(allReservations);
+        applyFilters();
+    }
+
+    function updateStats(rows) {
+        const today   = new Date().toISOString().split('T')[0];
+        const weekEnd = new Date(Date.now() + 7*24*60*60*1000).toISOString().split('T')[0];
+        document.getElementById('stat-today').textContent     = rows.filter(r => r.date === today).length;
+        document.getElementById('stat-week').textContent      = rows.filter(r => r.date >= today && r.date <= weekEnd).length;
+        document.getElementById('stat-confirmed').textContent = rows.filter(r => r.status === 'confirmada').length;
+        document.getElementById('stat-pending').textContent   = rows.filter(r => r.status === 'pendiente').length;
+    }
+
+    function applyFilters() {
+        const fd = document.getElementById('filter-date').value;
+        const fs = document.getElementById('filter-status').value;
+
+        let list = allReservations;
+        if (activeRestoFilter) list = list.filter(r => r.restaurant === activeRestoFilter);
+        if (fd) list = list.filter(r => r.date === fd);
+        if (fs) list = list.filter(r => r.status === fs);
+
+        updateStats(list);
+        renderTable(list);
+    }
+
+    function clearFilters() {
+        document.getElementById('filter-date').value = '';
+        document.getElementById('filter-status').value = '';
+        applyFilters();
+    }
+
+    /* ── RESTAURANT BADGE ── */
+    function restoBadge(name) {
+        const map = {
+            'Otitanuz Bar':   ['rbadge-bar',   '🥂 Otitanuz Bar'],
+            'La Hoguera':     ['rbadge-hog',   '🔥 La Hoguera'],
+            'Otitanuz Beach': ['rbadge-beach', '🏖 Otitanuz Beach'],
+        };
+        const [cls, label] = map[name] || ['', name || '—'];
+        return '<span class="rbadge ' + cls + '">' + label + '</span>';
+    }
+
+    /* ── RENDER ── */
+    function renderTable(rows) {
+        document.getElementById('count-badge').textContent = rows.length;
+
+        if (rows.length === 0) {
+            document.getElementById('table-body').innerHTML =
+                '<div class="state-msg">No hay reservas con estos filtros.</div>';
+            return;
+        }
+
+        const html = rows.map(r => {
+            const dateStr = new Date(r.date + 'T12:00').toLocaleDateString('es-ES', {
+                weekday: 'short', day: 'numeric', month: 'short'
+            });
+            const badge  = '<span class="badge badge-' + r.status + '">' + r.status.charAt(0).toUpperCase() + r.status.slice(1) + '</span>';
+            const phone  = r.phone ? '<a href="tel:' + r.phone + '" style="color:inherit;text-decoration:none">' + esc(r.phone) + '</a>' : '—';
+            const notes  = r.notes ? '<span style="font-size:0.78rem;color:var(--muted)">' + esc(r.notes) + '</span>' : '<span style="color:var(--border)">—</span>';
+
+            const btns = [
+                r.status !== 'confirmada' ? '<button class="action-btn confirm" onclick="changeStatus(\'' + r.id + '\',\'confirmada\')">✓ Confirmar</button>' : '',
+                r.status !== 'pendiente'  ? '<button class="action-btn" onclick="changeStatus(\'' + r.id + '\',\'pendiente\')">↩ Pendiente</button>' : '',
+                r.status !== 'cancelada'  ? '<button class="action-btn cancel" onclick="changeStatus(\'' + r.id + '\',\'cancelada\')">✗ Cancelar</button>' : '',
+            ].join('');
+
+            return '<tr>' +
+                '<td data-label="Restaurante">' + restoBadge(r.restaurant) + '</td>' +
+                '<td data-label="Fecha / Hora"><strong>' + dateStr + '</strong><div class="td-sub">' + r.time + '</div></td>' +
+                '<td data-label="Cliente"><span class="td-name">' + esc(r.name) + '</span><div class="td-sub">' + phone + (r.email ? ' · ' + esc(r.email) : '') + '</div></td>' +
+                '<td data-label="Pers.">' + r.guests + '</td>' +
+                '<td data-label="Estado">' + badge + '</td>' +
+                '<td data-label="Notas">' + notes + '</td>' +
+                '<td data-label="Acciones"><div class="actions-cell">' + btns + '</div></td>' +
+                '</tr>';
+        }).join('');
+
+        document.getElementById('table-body').innerHTML =
+            '<table><thead><tr>' +
+            '<th>Restaurante</th><th>Fecha / Hora</th><th>Cliente</th><th>Pers.</th><th>Estado</th><th>Notas</th><th>Acciones</th>' +
+            '</tr></thead><tbody>' + html + '</tbody></table>';
+    }
+
+    async function changeStatus(id, status) {
+        const { error } = await db.from('reservations').update({ status }).eq('id', id);
+        if (!error) {
+            const r = allReservations.find(x => x.id === id);
+            if (r) r.status = status;
+            applyFilters();
+        }
+    }
+
+    function esc(str) {
+        if (!str) return '';
+        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+</script>
+
+</body>
+</html>
