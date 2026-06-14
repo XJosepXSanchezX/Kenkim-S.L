@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reservas — Mi Restaurante</title>
+    <title>Reservas — Otitanuz Bar</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -141,6 +142,17 @@
             padding-right: 2.5rem;
         }
 
+        /* number input sin flechas */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+        input[type=number] { -moz-appearance: textfield; }
+
+        .guests-hint {
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-top: 0.3rem;
+        }
+
         .submit-btn {
             width: 100%;
             padding: 1rem;
@@ -233,22 +245,63 @@
             white-space: nowrap;
         }
 
+        /* Footer */
         .footer {
             text-align: center;
-            padding: 1.5rem;
+            padding: 1.75rem 1.5rem;
             color: var(--muted);
-            font-size: 0.75rem;
+            font-size: 0.78rem;
             border-top: 1px solid var(--border);
         }
 
-        .footer a { color: var(--midnight); text-decoration: none; }
+        .footer-phone {
+            margin-bottom: 1rem;
+        }
+
+        .footer-phone a {
+            color: var(--midnight);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.25rem;
+            margin-top: 0.75rem;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.78rem;
+            transition: color 0.2s;
+        }
+
+        .social-links a:hover { color: var(--midnight); }
+
+        .social-icon {
+            width: 28px; height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .social-icon.ig  { background: #E1306C; color: white; }
+        .social-icon.tt  { background: #010101; color: white; }
+        .social-icon.web { background: var(--midnight); color: white; }
     </style>
 </head>
 <body>
 
 <header class="header">
     <p class="header-eyebrow">Bienvenido</p>
-    <h1>Mi Restaurante</h1>
+    <h1>Otitanuz Bar</h1>
     <div class="divider"></div>
     <p class="header-sub">Reserve su mesa en segundos</p>
 </header>
@@ -306,19 +359,8 @@
 
             <div class="field">
                 <label for="guests">Comensales *</label>
-                <select id="guests" required>
-                    <option value="">Número de personas</option>
-                    <option value="1">1 persona</option>
-                    <option value="2">2 personas</option>
-                    <option value="3">3 personas</option>
-                    <option value="4">4 personas</option>
-                    <option value="5">5 personas</option>
-                    <option value="6">6 personas</option>
-                    <option value="7">7 personas</option>
-                    <option value="8">8 personas</option>
-                    <option value="9">9 personas</option>
-                    <option value="10">10 personas</option>
-                </select>
+                <input type="number" id="guests" min="1" max="50" placeholder="Número de personas" required>
+                <p class="guests-hint">Máximo 50 personas. Para eventos, llámanos.</p>
             </div>
 
             <div class="field">
@@ -347,24 +389,50 @@
 <div class="toast" id="toast"></div>
 
 <footer class="footer">
-    ¿Grupo grande o evento especial? Llámanos al
-    <a href="tel:+34600000000">600 000 000</a>
+    <div class="footer-phone">
+        ¿Grupo grande o evento especial? Llámanos al
+        <a href="tel:+34636360655">636 360 655</a>
+    </div>
+    <div class="social-links">
+        <a href="https://instagram.com/otitanuz_bar" target="_blank" rel="noopener">
+            <span class="social-icon ig">📸</span> Instagram
+        </a>
+        <a href="https://tiktok.com/@otitanuz_bar" target="_blank" rel="noopener">
+            <span class="social-icon tt">🎵</span> TikTok
+        </a>
+        <a href="https://otitanuzbar.pages.dev" target="_blank" rel="noopener">
+            <span class="social-icon web">🌐</span> Web
+        </a>
+    </div>
 </footer>
 
 <script>
     // ════════════════════════════════════════════════
-    //  ⚙️  CONFIGURA AQUÍ TUS DATOS DE SUPABASE
+    //  ⚙️  SUPABASE
     // ════════════════════════════════════════════════
-    const SUPABASE_URL  = 'https://axqptiwackqbtkqpylzm.supabase.co';
-    const SUPABASE_KEY  = 'sb_publishable_JqZlwNT9tHPPKsIYDGurQQ_JQZeGoLd';
+    const SUPABASE_URL = 'https://axqptiwackqbtkqpylzm.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_JqZlwNT9tHPPKsIYDGurQQ_JQZeGoLd';
+
+    // ════════════════════════════════════════════════
+    //  ⚙️  EMAILJS — reservas se envían a: redes.kenkim+reservas@gmail.com
+    //  1. Ve a emailjs.com → crea cuenta gratis con ese Gmail
+    //  2. Email Services → Add Service → Gmail → conecta tu cuenta
+    //  3. Email Templates → Create Template (usa las variables de abajo)
+    //  4. Account → copia tu Public Key
+    //  5. Pega aquí los 3 valores
+    // ════════════════════════════════════════════════
+    const EMAILJS_PUBLIC_KEY  = 'HFehV9yfugqgpbr5M';
+    const EMAILJS_SERVICE_ID  = 'service_2p4kohv';
+    const EMAILJS_TEMPLATE_ID = 'template_2cqbwfi';
     // ════════════════════════════════════════════════
 
     const { createClient } = supabase;
     const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+
     // Fecha mínima = hoy
-    const dateInput = document.getElementById('date');
-    dateInput.min = new Date().toISOString().split('T')[0];
+    document.getElementById('date').min = new Date().toISOString().split('T')[0];
 
     async function submitReservation() {
         const name   = document.getElementById('name').value.trim();
@@ -380,13 +448,20 @@
             return;
         }
 
+        const guestsNum = parseInt(guests);
+        if (guestsNum < 1 || guestsNum > 50) {
+            showToast('El número de personas debe estar entre 1 y 50.');
+            return;
+        }
+
         const btn = document.getElementById('submit-btn');
         btn.disabled = true;
         btn.textContent = 'Enviando…';
 
+        // 1. Guardar en Supabase
         const { error } = await db.from('reservations').insert([{
             name, phone, email, date, time,
-            guests: parseInt(guests),
+            guests: guestsNum,
             notes,
             status: 'pendiente'
         }]);
@@ -398,19 +473,31 @@
             return;
         }
 
-        // Mostrar pantalla de éxito
-        document.getElementById('form-section').style.display = 'none';
-        document.getElementById('success-card').style.display = 'block';
-        document.getElementById('success-name').textContent = name.split(' ')[0];
-
+        // 2. Enviar email al restaurante via EmailJS
         const dateObj = new Date(date + 'T12:00');
         const dateFmt = dateObj.toLocaleDateString('es-ES', {
             weekday: 'long', day: 'numeric', month: 'long'
         });
 
+        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+            restaurant_name : 'Otitanuz Bar',
+            from_name       : name,
+            phone           : phone,
+            client_email    : email || 'No indicado',
+            date            : dateFmt,
+            time            : time,
+            guests          : guestsNum,
+            notes           : notes || 'Ninguna',
+        }).catch(() => {}); // silencioso si falla email, la reserva ya está guardada
+
+        // 3. Pantalla de éxito
+        document.getElementById('form-section').style.display = 'none';
+        document.getElementById('success-card').style.display = 'block';
+        document.getElementById('success-name').textContent = name.split(' ')[0];
+
         document.getElementById('success-detail').innerHTML =
             `📅 ${dateFmt.charAt(0).toUpperCase() + dateFmt.slice(1)} a las ${time}<br>
-             👥 ${guests} ${guests == 1 ? 'persona' : 'personas'}
+             👥 ${guestsNum} ${guestsNum === 1 ? 'persona' : 'personas'}
              ${notes ? `<br>📝 ${notes}` : ''}`;
     }
 
