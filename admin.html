@@ -152,7 +152,66 @@
             .cal-cell { min-height:52px; padding:.3rem; }
             .cal-num { width:22px; height:22px; font-size:.75rem; }
         }
-    </style>
+
+                /* ══ MOBILE RESPONSIVE ADMIN ══ */
+        @media (max-width: 768px) {
+            /* Nav */
+            .admin-nav { padding: .7rem 1rem; gap: .5rem; }
+            .nav-brand { font-size: .9rem; }
+            .nav-brand small { font-size: .55rem; }
+            .nav-btn { padding: .4rem .6rem; font-size: .72rem; }
+            /* Main tabs: scroll horizontal */
+            .main-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; display: flex; }
+            .main-tabs::-webkit-scrollbar { display: none; }
+            .main-tab { white-space: nowrap; flex-shrink: 0; padding: .8rem .9rem; font-size: .76rem; }
+            /* Container */
+            .admin-container { padding: 1rem; }
+            /* Stats 2×2 */
+            .stats-grid { grid-template-columns: repeat(2,1fr); gap: .75rem; margin-bottom: 1rem; }
+            .stat-card { padding: 1rem; }
+            .stat-value { font-size: 1.8rem; }
+            .stat-label { font-size: .58rem; }
+            /* Resto tabs: scroll horizontal */
+            .resto-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; scrollbar-width: none; padding-bottom: 2px; gap: .4rem; margin-bottom: .75rem; }
+            .resto-tabs::-webkit-scrollbar { display: none; }
+            .resto-tab { white-space: nowrap; flex-shrink: 0; padding: .4rem .8rem; font-size: .73rem; }
+            /* Filters apilados */
+            .filters { flex-direction: column; align-items: stretch; gap: .65rem; padding: .85rem 1rem; }
+            .filter-group { width: 100%; }
+            .filter-group label { display: block; margin-bottom: .2rem; }
+            .filters input, .filters select { width: 100%; font-size: 1rem; padding: .65rem .75rem; }
+            .btn-clear { width: 100%; padding: .65rem; font-size: .82rem; min-height: 44px; }
+            /* Calendario */
+            .cal-wrapper { border-radius: 10px; }
+            .cal-nav { padding: .7rem 1rem; gap: .5rem; }
+            .cal-title { font-size: .9rem; }
+            .cal-nav-btn { width: 30px; height: 30px; font-size: .78rem; }
+            .cal-today-btn { font-size: .7rem; padding: .3rem .65rem; }
+            .cal-cell { min-height: 56px; padding: .3rem .2rem; }
+            .cal-num { width: 24px; height: 24px; font-size: .75rem; }
+            .cal-count { font-size: .58rem; }
+            .cal-dow { font-size: .56rem; padding: .5rem 0; letter-spacing: 0; }
+            /* Day panel */
+            .res-card { flex-direction: column; gap: .4rem; padding: .85rem 1rem; }
+            .res-time { font-size: .9rem; }
+            .res-actions { flex-wrap: wrap; gap: .3rem; }
+            .action-btn { font-size: .7rem; padding: .35rem .6rem; min-height: 38px; }
+            /* Table */
+            .table-header { padding: .8rem 1rem; }
+            .table-title { font-size: .9rem; }
+            /* Login */
+            .login-box { padding: 2rem 1.25rem; margin: 1rem; }
+        }
+
+        @media (max-width: 440px) {
+            .cal-cell { min-height: 46px; }
+            .cal-num { width: 22px; height: 22px; font-size: .7rem; }
+            .cal-dots { display: none; }
+            .cal-count { font-size: .55rem; }
+            .main-tab { padding: .75rem .75rem; font-size: .71rem; }
+            .stats-grid { gap: .6rem; }
+        }
+        </style>
 </head>
 <body>
 

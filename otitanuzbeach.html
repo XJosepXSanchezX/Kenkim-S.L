@@ -78,6 +78,52 @@
         .numInputWrapper span { border-color:rgba(255,255,255,.2); }
         .numInputWrapper span svg { fill:rgba(255,255,255,.7); }
         .numInput { color:white; }
+
+                /* ══ MOBILE RESPONSIVE ══ */
+        @media (max-width: 640px) {
+            .back-link { font-size: .72rem; padding: .5rem .85rem; }
+            .header { padding: 0 1rem 2rem; }
+            .header h1 { font-size: 2rem; }
+            .header-sub { font-size: .8rem; }
+            .container { padding: 1.75rem 1rem 2.5rem; }
+            .section-title { font-size: 1.05rem; margin-bottom: 1.25rem; }
+            /* 16px en inputs evita zoom iOS */
+            .field input,
+            .field select,
+            .field textarea { font-size: 1rem; padding: .75rem .9rem; }
+            .field label { font-size: .65rem; }
+            .guests-hint { font-size: .7rem; }
+            /* Touch targets mínimo 48px */
+            .submit-btn { min-height: 52px; font-size: .82rem; }
+            .new-reservation-btn { min-height: 48px; width: 100%; }
+            /* Footer */
+            .footer { padding: 1.25rem 1rem; }
+            .footer-phone { margin-bottom: .75rem; font-size: .8rem; }
+            .social-links { flex-wrap: wrap; gap: .6rem; justify-content: center; }
+            /* Location */
+            .location-container { padding: 1.5rem 1rem; }
+            .location-address { font-size: 1rem; }
+            .location-map iframe { height: 180px; }
+            .maps-link { font-size: .78rem; width: 100%; justify-content: center; }
+            /* Success */
+            .success-card { padding: 2.25rem 1.25rem; }
+            .success-icon { width: 46px; height: 46px; font-size: 1.2rem; }
+        }
+
+        @media (max-width: 380px) {
+            .form-row { grid-template-columns: 1fr; }
+            .header h1 { font-size: 1.8rem; }
+        }
+        /* ── LOCATION ── */
+        .location-section { background: white; border-top: 1px solid var(--border); }
+        .location-container { max-width: 540px; margin: 0 auto; padding: 2rem 1.5rem; }
+        .location-label { font-size: .65rem; letter-spacing: .25em; text-transform: uppercase; color: var(--muted); margin-bottom: .4rem; }
+        .location-address { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 400; color: var(--midnight); margin-bottom: .25rem; }
+        .location-city { font-size: .82rem; color: var(--muted); margin-bottom: 1.1rem; }
+        .maps-link { display: inline-flex; align-items: center; gap: .4rem; color: var(--accent); text-decoration: none; font-size: .8rem; font-weight: 500; margin-bottom: 1.25rem; padding: .5rem .9rem; border: 1px solid rgba(0,0,0,.1); border-radius: 6px; transition: opacity .2s; }
+        .maps-link:hover { opacity: .75; }
+        .location-map iframe { width: 100%; height: 220px; border-radius: 8px; border: 1px solid var(--border); display: block; }
+        @media (max-width: 600px) { .location-container { padding: 1.5rem 1rem; } }
     </style>
 </head>
 <body>
@@ -155,6 +201,19 @@
         <button class="new-reservation-btn" onclick="resetForm()">Hacer otra reserva</button>
     </div>
 </div>
+
+
+<section class="location-section">
+    <div class="location-container">
+        <p class="location-label">📍 Dónde estamos</p>
+        <p class="location-address">Carrer de Santa Madrona, 44</p>
+        <p class="location-city">08911 Badalona · Barcelona</p>
+        <a class="maps-link" href="https://www.google.com/maps/place//data=!4m2!3m1!1s0x12a4bbf1539a9c89:0x9d2154ebd9bc505" target="_blank" rel="noopener">📍 Ver en Google Maps →</a>
+        <div class="location-map">
+            <iframe src="https://maps.google.com/maps?q=Carrer+de+Santa+Madrona,+44,+Badalona&output=embed&hl=es" width="100%" height="220" style="border:0" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+    </div>
+</section>
 
 <div class="toast" id="toast"></div>
 
