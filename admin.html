@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Admin — Otitanuz Group</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1A1F2E">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="KenKim Admin">
+    <meta name="mobile-web-app-capable" content="yes">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -29,6 +39,7 @@
         .nav-btn{padding:.45rem .85rem;border-radius:4px;cursor:pointer;font-size:.78rem;font-family:'Inter',sans-serif;transition:background .2s;}
         .btn-refresh{background:rgba(255,255,255,.1);border:none;color:white;}.btn-refresh:hover{background:rgba(255,255,255,.2);}
         .btn-logout{background:transparent;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);}.btn-logout:hover{color:white;}
+        .btn-install{background:rgba(201,153,90,.18);border:1px solid rgba(201,153,90,.5);color:var(--amber);}.btn-install:hover{background:var(--amber);color:var(--midnight);}
         /* TABS */
         .main-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);background:white;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
         .main-tabs::-webkit-scrollbar{display:none;}
@@ -78,6 +89,8 @@
         .resto-tab[data-r="Otitanuz Bar"].active{background:#4FACFE;}
         .resto-tab[data-r="La Hoguera"].active{background:#FFB800;color:#07070F;}
         .resto-tab[data-r="Otitanuz Beach"].active{background:#00CFFF;color:#07070F;}
+        .resto-tab[data-r="La Taverna Otitanuz"].active{background:#E8C468;color:#07070F;}
+        .resto-tab[data-r="Mira Miro"].active{background:#A855F7;color:#fff;}
         .toolbar{background:white;border-radius:8px;padding:1rem 1.25rem;display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;margin-bottom:1rem;}
         .search-input{flex:1;min-width:180px;padding:.5rem .85rem;border:1px solid var(--border);border-radius:6px;font-family:'Inter',sans-serif;font-size:.85rem;color:var(--text);}
         .search-input:focus{outline:none;border-color:var(--amber);}
@@ -108,7 +121,7 @@
         .badge-pendiente{background:#FFF3CD;color:#8A6900;}.badge-confirmada{background:#D4EDDA;color:#1E5C3A;}.badge-cancelada{background:#FAE0E0;color:#8B1E1E;}
         .badge-asistio{background:#D4EDDA;color:#1E5C3A;}.badge-no_asistio{background:#FFE8D6;color:#8A3A00;}
         .rbadge{display:inline-block;padding:.2rem .55rem;border-radius:4px;font-size:.65rem;font-weight:600;white-space:nowrap;}
-        .rbadge-bar{background:#E8F4FF;color:#1565C0;}.rbadge-hog{background:#FFF8E1;color:#8A6000;}.rbadge-beach{background:#E0F7FA;color:#006064;}
+        .rbadge-bar{background:#E8F4FF;color:#1565C0;}.rbadge-hog{background:#FFF8E1;color:#8A6000;}.rbadge-beach{background:#E0F7FA;color:#006064;}.rbadge-taverna{background:#FBF1D9;color:#8A6B1A;}.rbadge-miro{background:#F2E6FE;color:#6B21A8;}
         /* ACTION BUTTONS */
         .action-btn{padding:.28rem .6rem;border:1px solid var(--border);border-radius:4px;background:transparent;cursor:pointer;font-size:.68rem;font-family:'Inter',sans-serif;color:var(--text);transition:all .15s;white-space:nowrap;}
         .action-btn:hover{background:var(--midnight);color:white;border-color:var(--midnight);}
@@ -171,6 +184,8 @@
             .nav-brand     { font-size: .9rem; }
             .nav-brand small { font-size: .55rem; }
             .nav-btn       { padding: .4rem .65rem; font-size: .72rem; }
+            .btn-install   { font-size: .68rem; padding: .35rem .55rem; }
+            .nav-right     { flex-wrap: wrap; justify-content: flex-end; gap: .4rem; }
             .main-tabs     { overflow-x: auto; display: flex; scrollbar-width: none; }
             .main-tabs::-webkit-scrollbar { display: none; }
             .main-tab      { padding: .85rem .85rem; font-size: .75rem; white-space: nowrap; flex-shrink: 0; }
@@ -355,6 +370,7 @@
     <nav class="admin-nav">
         <div class="nav-brand">Otitanuz Group<small>Panel de reservas</small></div>
         <div class="nav-right">
+            <button class="nav-btn btn-install" id="btn-install" onclick="installApp()" style="display:none">📲 Instalar app</button>
             <button class="nav-btn btn-refresh" onclick="loadReservations()">↻ Actualizar</button>
             <button class="nav-btn btn-logout" onclick="logout()">Salir</button>
         </div>
@@ -403,6 +419,8 @@
                 <button class="resto-tab" data-r="Otitanuz Bar" onclick="setResto(this)">🥂 Otitanuz Bar</button>
                 <button class="resto-tab" data-r="La Hoguera" onclick="setResto(this)">🔥 La Hoguera</button>
                 <button class="resto-tab" data-r="Otitanuz Beach" onclick="setResto(this)">🏖 Otitanuz Beach</button>
+                <button class="resto-tab" data-r="La Taverna Otitanuz" onclick="setResto(this)">🍷 La Taverna Otitanuz</button>
+                <button class="resto-tab" data-r="Mira Miro" onclick="setResto(this)">✨ Mira Miro</button>
             </div>
             <div class="toolbar">
                 <input class="search-input" type="text" id="r-search" placeholder="🔍 Buscar por nombre o teléfono…" oninput="renderReservas()">
@@ -459,6 +477,8 @@
                 <button class="resto-tab" data-rh="Otitanuz Bar" onclick="setRestoH(this)">🥂 Otitanuz Bar</button>
                 <button class="resto-tab" data-rh="La Hoguera" onclick="setRestoH(this)">🔥 La Hoguera</button>
                 <button class="resto-tab" data-rh="Otitanuz Beach" onclick="setRestoH(this)">🏖 Otitanuz Beach</button>
+                <button class="resto-tab" data-rh="La Taverna Otitanuz" onclick="setRestoH(this)">🍷 La Taverna Otitanuz</button>
+                <button class="resto-tab" data-rh="Mira Miro" onclick="setRestoH(this)">✨ Mira Miro</button>
             </div>
             <div class="toolbar">
                 <div class="filter-group"><label>Fecha</label><input type="date" id="h-filter-date" onchange="renderHistorico()"></div>
@@ -475,6 +495,37 @@
 </div>
 
 <script>
+/* ── PWA: registro de Service Worker ── */
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').catch(function(){});
+    });
+}
+
+/* ── PWA: prompt de instalación (Android/Chrome) ── */
+var deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    document.getElementById('btn-install').style.display = 'inline-block';
+});
+function installApp() {
+    if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        deferredInstallPrompt.userChoice.then(function() {
+            deferredInstallPrompt = null;
+            document.getElementById('btn-install').style.display = 'none';
+        });
+    } else {
+        // iOS no soporta el prompt nativo: mostramos instrucciones
+        alert('Para instalar en iPhone/iPad:\n\n1. Pulsa el botón Compartir 📤 en Safari\n2. Elige "Añadir a pantalla de inicio"\n3. Pulsa "Añadir"\n\n¡Ya tendrás el icono de la app en tu pantalla!');
+    }
+}
+// En iOS mostramos el botón siempre (no hay evento beforeinstallprompt)
+if (/iphone|ipad|ipod/i.test(navigator.userAgent) && !window.navigator.standalone) {
+    document.getElementById('btn-install').style.display = 'inline-block';
+}
+
 var SUPABASE_URL='https://axqptiwackqbtkqpylzm.supabase.co',SUPABASE_KEY='sb_publishable_JqZlwNT9tHPPKsIYDGurQQ_JQZeGoLd';
 var ADMIN_PASSWORD='@Kenkim2026';
 var db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -536,7 +587,7 @@ function renderCalendar(){
     for(var d=1;d<=dim;d++){
         var ds=calYear+'-'+String(calMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
         var reservs=byDate[ds]||[],isPast=new Date(calYear,calMonth,d)<todayDate,isToday=ds===today,isSel=ds===selectedDay;
-        var dots=['Otitanuz Bar:4FACFE','La Hoguera:FFB800','Otitanuz Beach:00CFFF'].map(function(x){
+        var dots=['Otitanuz Bar:4FACFE','La Hoguera:FFB800','Otitanuz Beach:00CFFF','La Taverna Otitanuz:E8C468','Mira Miro:A855F7'].map(function(x){
             var parts=x.split(':'),cnt=reservs.filter(function(r){return r.restaurant===parts[0];}).length;
             return cnt?'<span class="cal-dot" style="background:#'+parts[1]+'"></span>':'';
         }).join('');
@@ -611,9 +662,9 @@ function renderStats(){
     document.getElementById('s-cancel').textContent=allReservations.filter(function(r){return r.status==='cancelada';}).length;
     document.getElementById('s-noasistio').textContent=allReservations.filter(function(r){return r.status==='no_asistio';}).length;
     /* Chart: por restaurante */
-    var restos=['Otitanuz Bar','La Hoguera','Otitanuz Beach'];
+    var restos=['Otitanuz Bar','La Hoguera','Otitanuz Beach','La Taverna Otitanuz','Mira Miro'];
     var restoCounts=restos.map(function(r){return allReservations.filter(function(x){return x.restaurant===r&&x.status!=='cancelada';}).length;});
-    makeChart('chart-resto','doughnut',restos,restoCounts,['#4FACFE','#FFB800','#00CFFF']);
+    makeChart('chart-resto','doughnut',restos,restoCounts,['#4FACFE','#FFB800','#00CFFF','#E8C468','#A855F7']);
     /* Chart: por día semana */
     var wdData=[0,0,0,0,0,0,0];
     allReservations.filter(function(r){return r.status!=='cancelada';}).forEach(function(r){
@@ -755,7 +806,7 @@ async function toggleCloseDay(ds,close){
 
 /* UTILS */
 function statusLabel(s){return{pendiente:'Pendiente',confirmada:'Confirmada',cancelada:'Cancelada',asistio:'Asistió',no_asistio:'No asistió'}[s]||s;}
-function restoBadge(n){var m={'Otitanuz Bar':['rbadge-bar','🥂 Otitanuz Bar'],'La Hoguera':['rbadge-hog','🔥 La Hoguera'],'Otitanuz Beach':['rbadge-beach','🏖 Otitanuz Beach']};var v=m[n]||['','—'];return '<span class="rbadge '+v[0]+'">'+v[1]+'</span>';}
+function restoBadge(n){var m={'Otitanuz Bar':['rbadge-bar','🥂 Otitanuz Bar'],'La Hoguera':['rbadge-hog','🔥 La Hoguera'],'Otitanuz Beach':['rbadge-beach','🏖 Otitanuz Beach'],'La Taverna Otitanuz':['rbadge-taverna','🍷 La Taverna Otitanuz'],'Mira Miro':['rbadge-miro','✨ Mira Miro']};var v=m[n]||['','—'];return '<span class="rbadge '+v[0]+'">'+v[1]+'</span>';}
 function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;');}
 </script>
 </body>
