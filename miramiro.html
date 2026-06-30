@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservas — Mira Miro</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:      #07070F;
+            --surface: #0D0D1A;
+            --neon:    #A855F7;
+            --neon-rgb:168,85,247;
+            --glow:    rgba(168,85,247,.42);
+            --text:    #FFFFFF;
+            --sub:     rgba(255,255,255,.72);
+            --ph:      rgba(255,255,255,.85);
+            --border:  rgba(168,85,247,.22);
+            --field-bg:rgba(255,255,255,.07);
+            --success: #00D4AA;
+        }
+        *  { box-sizing:border-box; margin:0; padding:0; }
+        body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+
+        /* ── HEADER ── */
+        .header { background:var(--bg); padding:0 1.5rem 3rem; text-align:center; position:relative; overflow:hidden; }
+        .header::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--neon),transparent); box-shadow:0 0 18px var(--glow); }
+        .header::after  { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 80% 55% at 50% 0%,rgba(168,85,247,.06),transparent 70%); pointer-events:none; }
+        .header-top { display:flex; align-items:center; }
+        .back-link { display:inline-flex; align-items:center; gap:.35rem; padding:.7rem 1rem; color:var(--sub); text-decoration:none; font-size:.78rem; border-bottom:1px solid rgba(255,255,255,.06); width:100%; transition:color .2s; }
+        .back-link:hover { color:var(--neon); }
+        .lang-btn { position:absolute; top:.85rem; right:1rem; background:rgba(168,85,247,.1); border:1px solid var(--border); color:var(--neon); padding:.38rem .7rem; border-radius:6px; cursor:pointer; font-size:.72rem; font-family:'Inter',sans-serif; z-index:5; }
+        .eyebrow  { font-size:.68rem; letter-spacing:.32em; text-transform:uppercase; color:var(--neon); margin-bottom:.85rem; padding-top:2rem; }
+        .header h1 { font-family:'Playfair Display',serif; font-size:clamp(2rem,6vw,3.8rem); color:var(--text); font-weight:400; line-height:1.05; text-shadow:0 0 35px var(--glow),0 0 70px rgba(168,85,247,.18); }
+        .header h1 em { font-style:italic; color:var(--neon); text-shadow:0 0 18px var(--glow),0 0 38px var(--glow); }
+        .divider  { width:38px; height:1px; background:var(--neon); margin:1.2rem auto; box-shadow:0 0 7px var(--glow); }
+        .sub-text { color:var(--sub); font-size:.9rem; font-weight:300; }
+
+        /* ── FORM ── */
+        .container { max-width:540px; margin:0 auto; padding:2.5rem 1.5rem 3rem; }
+        .form-title { font-family:'Playfair Display',serif; font-size:1.2rem; color:var(--text); margin-bottom:1.75rem; text-align:center; }
+        .form-grid  { display:grid; gap:1.25rem; }
+        .row-2 { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+
+        .field label { display:block; font-size:.72rem; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--neon); margin-bottom:.48rem; }
+        .field input, .field select, .field textarea {
+            width:100%; padding:.85rem 1rem;
+            background:var(--field-bg); border:1px solid var(--border);
+            border-radius:7px; font-family:'Inter',sans-serif; font-size:1rem;
+            color:var(--text); transition:border-color .2s, background .2s, box-shadow .2s;
+            -webkit-appearance:none; appearance:none;
+            color-scheme: dark;
+        }
+        .field input::placeholder, .field textarea::placeholder { color:var(--ph); }
+        .field input:focus, .field select:focus, .field textarea:focus {
+            outline:none; border-color:var(--neon);
+            background:rgba(168,85,247,.06);
+            box-shadow:0 0 0 2px rgba(168,85,247,.14), 0 0 18px rgba(168,85,247,.07);
+        }
+        /* Date input icon white */
+        input[type=date]::-webkit-calendar-picker-indicator { filter:invert(1); opacity:.8; cursor:pointer; width:18px; height:18px; }
+        input[type=date]::-webkit-inner-spin-button, input[type=date]::-webkit-clear-button { display:none; }
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance:none; }
+        input[type=number] { -moz-appearance:textfield; }
+        .field select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23A855F7' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 1rem center; padding-right:2.5rem; }
+        .field select option { background:#0D0D1A; color:#fff; }
+        .field textarea { resize:vertical; min-height:82px; }
+        .hint  { font-size:.78rem; color:var(--sub); margin-top:.35rem; }
+        .warn-capacity { background:rgba(255,120,0,.1); border:1px solid rgba(255,120,0,.3); border-radius:6px; padding:.72rem 1rem; font-size:.82rem; color:#FF9042; display:none; margin-top:-.4rem; }
+
+        /* RGPD */
+        .rgpd { display:flex; align-items:flex-start; gap:.65rem; }
+        .rgpd input[type=checkbox] { width:18px; height:18px; flex-shrink:0; margin-top:2px; accent-color:var(--neon); cursor:pointer; }
+        .rgpd span { font-size:.82rem; color:rgba(255,255,255,.82); line-height:1.55; }
+        .rgpd a { color:var(--neon); }
+
+        /* SUBMIT */
+        .btn-submit { width:100%; padding:1rem; background:var(--neon); color:#ffffff; border:none; border-radius:8px; font-family:'Inter',sans-serif; font-size:.9rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; transition:filter .2s, box-shadow .2s, transform .1s; margin-top:.5rem; }
+        .btn-submit:hover  { filter:brightness(1.12); box-shadow:0 0 26px var(--glow), 0 0 52px rgba(168,85,247,.18); }
+        .btn-submit:active { transform:scale(.99); }
+        .btn-submit:disabled { opacity:.5; cursor:not-allowed; filter:none; box-shadow:none; }
+
+        /* SUCCESS */
+        .success { display:none; text-align:center; padding:3rem 1.5rem; background:rgba(0,212,170,.05); border-radius:14px; border:1px solid rgba(0,212,170,.22); }
+        .success-icon { width:54px; height:54px; background:var(--success); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1.25rem; color:#07070F; font-size:1.4rem; box-shadow:0 0 18px rgba(0,212,170,.35); }
+        .success h2 { font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:400; margin-bottom:.5rem; }
+        .success p  { color:var(--sub); font-size:.88rem; line-height:1.7; }
+        .success-detail { margin-top:1.4rem; padding:1rem 1.2rem; background:rgba(255,255,255,.05); border-radius:7px; font-size:.88rem; line-height:1.95; border:1px solid var(--border); }
+        .btn-new { margin-top:1.4rem; padding:.75rem 2rem; border:1px solid var(--neon); background:transparent; color:var(--neon); border-radius:7px; cursor:pointer; font-family:'Inter',sans-serif; font-size:.8rem; letter-spacing:.1em; text-transform:uppercase; min-width:100%; }
+
+        /* LOCATION */
+        .location { background:var(--surface); border-top:1px solid var(--border); }
+        .loc-inner { max-width:540px; margin:0 auto; padding:2rem 1.5rem; }
+        .loc-label   { font-size:.68rem; letter-spacing:.22em; text-transform:uppercase; color:var(--neon); margin-bottom:.4rem; }
+        .loc-address { font-family:'Playfair Display',serif; font-size:1.1rem; margin-bottom:.25rem; }
+        .loc-city    { font-size:.84rem; color:var(--sub); margin-bottom:1rem; }
+        .loc-link    { display:flex; align-items:center; justify-content:center; gap:.4rem; color:var(--neon); text-decoration:none; font-size:.82rem; font-weight:500; margin-bottom:1.2rem; padding:.55rem 1rem; border:1px solid rgba(168,85,247,.28); border-radius:7px; transition:box-shadow .2s; }
+        .loc-link:hover { box-shadow:0 0 12px rgba(168,85,247,.3); }
+        .loc-map iframe { width:100%; height:220px; border:1px solid var(--border); border-radius:10px; display:block; filter:grayscale(75%) invert(88%); }
+
+        /* TOAST */
+        .toast { position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%); background:#c0392b; color:#fff; padding:.75rem 1.5rem; border-radius:7px; font-size:.84rem; display:none; z-index:100; max-width:90%; text-align:center; }
+
+        /* FOOTER */
+        .footer { text-align:center; padding:1.75rem 1.5rem; border-top:1px solid rgba(168,85,247,.07); }
+        .footer-tel { margin-bottom:.9rem; font-size:.82rem; color:var(--sub); }
+        .footer-tel a { color:var(--neon); text-decoration:none; font-weight:500; }
+        .socials { display:flex; justify-content:center; gap:1.1rem; flex-wrap:wrap; }
+        .socials a { display:flex; align-items:center; gap:.35rem; color:var(--sub); text-decoration:none; font-size:.78rem; transition:color .2s; }
+        .socials a:hover { color:var(--neon); }
+        .sico { width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:.95rem; }
+        .sico.ig  { background:#E1306C; }
+        .sico.tt  { background:#111; border:1px solid #333; }
+        .sico.web { background:rgba(168,85,247,.14); border:1px solid var(--border); }
+
+        /* ── MOBILE ── */
+        @media (max-width: 600px) {
+            .header       { padding:0 1rem 2.25rem; }
+            .back-link    { font-size:.75rem; padding:.65rem 1rem; }
+            .lang-btn     { top:.8rem; right:.8rem; font-size:.7rem; padding:.35rem .6rem; }
+            .header h1    { font-size:2rem; margin-top:1.25rem; }
+            .eyebrow      { padding-top:1.5rem; font-size:.65rem; }
+            .divider      { margin:.9rem auto; }
+            .sub-text     { font-size:.86rem; }
+            .container    { padding:1.75rem 1rem 3rem; }
+            .form-title   { font-size:1.08rem; margin-bottom:1.35rem; }
+            .form-grid    { gap:1.1rem; }
+            .row-2        { grid-template-columns:1fr; gap:.9rem; }
+            .field label  { font-size:.7rem; margin-bottom:.42rem; }
+            .field input,
+            .field select,
+            .field textarea { font-size:1rem; padding:.82rem .95rem; min-height:52px; border-radius:8px; }
+            .field textarea { min-height:88px; }
+            .hint         { font-size:.76rem; }
+            .rgpd span    { font-size:.8rem; }
+            .rgpd input[type=checkbox] { width:20px; height:20px; }
+            .btn-submit   { min-height:56px; font-size:.88rem; border-radius:10px; margin-top:.75rem; }
+            .btn-new      { min-height:50px; font-size:.78rem; }
+            .success      { padding:2.25rem 1.1rem; border-radius:12px; }
+            .loc-inner    { padding:1.6rem 1rem; }
+            .loc-map iframe { height:190px; }
+            .loc-link     { font-size:.8rem; min-height:46px; }
+            .footer       { padding:1.4rem 1rem; }
+            .footer-tel   { font-size:.8rem; }
+            .socials      { gap:.75rem; }
+            .toast        { font-size:.82rem; }
+        }
+        @media (max-width: 360px) {
+            .header h1 { font-size:1.8rem; }
+            .btn-submit { font-size:.82rem; }
+        }
+
+        /* ── FLATPICKR DARK NEON (desktop only) ── */
+        .flatpickr-calendar {
+            background: #0D0D1A !important;
+            border: 1px solid rgba(168,85,247,.25) !important;
+            box-shadow: 0 0 30px rgba(168,85,247,.12), 0 20px 60px rgba(0,0,0,.7) !important;
+            border-radius: 16px !important;
+            font-family: 'Inter', sans-serif !important;
+            overflow: hidden !important;
+            width: 320px !important;
+        }
+        .flatpickr-months {
+            background: rgba(168,85,247,.08) !important;
+            border-bottom: 1px solid rgba(168,85,247,.15) !important;
+            padding: .5rem 0 !important;
+        }
+        .flatpickr-months .flatpickr-month,
+        .flatpickr-weekdays,
+        .flatpickr-weekday { background: transparent !important; }
+        .flatpickr-current-month { font-size: 1rem !important; color: #fff !important; font-weight: 500 !important; }
+        .flatpickr-current-month .flatpickr-monthDropdown-months {
+            background: #0D0D1A !important; color: #fff !important;
+        }
+        .flatpickr-current-month input.cur-year { color: #fff !important; }
+        .flatpickr-prev-month, .flatpickr-next-month {
+            color: rgba(168,85,247,1) !important;
+            fill: rgba(168,85,247,1) !important;
+        }
+        .flatpickr-prev-month:hover, .flatpickr-next-month:hover { background: rgba(168,85,247,.12) !important; border-radius: 8px !important; }
+        .flatpickr-prev-month svg, .flatpickr-next-month svg { fill: rgba(168,85,247,1) !important; }
+        .flatpickr-weekday {
+            color: rgba(168,85,247,.55) !important;
+            font-size: .7rem !important;
+            letter-spacing: .06em !important;
+            font-weight: 600 !important;
+        }
+        .flatpickr-days { border: none !important; padding: .4rem !important; }
+        .dayContainer { padding: .2rem !important; }
+        .flatpickr-day {
+            color: rgba(255,255,255,.88) !important;
+            border: none !important;
+            border-radius: 9px !important;
+            font-size: .88rem !important;
+            height: 38px !important;
+            line-height: 38px !important;
+            transition: background .15s !important;
+        }
+        .flatpickr-day:hover { background: rgba(168,85,247,.14) !important; color: #fff !important; }
+        .flatpickr-day.today {
+            border: 1.5px solid rgba(168,85,247,.7) !important;
+            color: #fff !important;
+            font-weight: 600 !important;
+        }
+        .flatpickr-day.today:hover { background: rgba(168,85,247,.15) !important; }
+        .flatpickr-day.selected, .flatpickr-day.selected:hover {
+            background: rgba(168,85,247,1) !important;
+            border: none !important;
+            color: #07070F !important;
+            font-weight: 700 !important;
+            box-shadow: 0 0 12px rgba(168,85,247,.5) !important;
+        }
+        .flatpickr-day.flatpickr-disabled {
+            color: rgba(255,255,255,.18) !important;
+        }
+        .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay {
+            color: rgba(255,255,255,.22) !important;
+        }
+        .numInputWrapper span { border-color: rgba(168,85,247,.2) !important; }
+        .numInputWrapper span svg { fill: rgba(168,85,247,.7) !important; }
+        .flatpickr-innerContainer { background: #0D0D1A !important; }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="header-top">
+        <a class="back-link" href="/">← <span data-t="back">Todos los restaurantes</span></a>
+        <button class="lang-btn" id="lang-btn" onclick="toggleLang()">🇬🇧 EN</button>
+    </div>
+    <p class="eyebrow">✨ Grupo KenKim</p>
+    <h1>Mira <em>Miro</em></h1>
+    <div class="divider"></div>
+    <p class="sub-text" data-t="sub">Reserve su mesa en segundos</p>
+</header>
+
+<div class="container">
+    <div id="form-wrap">
+        <p class="form-title" data-t="title">Solicitar reserva</p>
+        <div class="form-grid">
+
+            <div class="row-2">
+                <div class="field">
+                    <label data-t="ln">NOMBRE *</label>
+                    <input type="text" id="name" placeholder="Tu nombre" autocomplete="name" required>
+                </div>
+                <div class="field">
+                    <label data-t="lp">TELÉFONO *</label>
+                    <input type="tel" id="phone" placeholder="6XX XXX XXX" autocomplete="tel" required>
+                </div>
+            </div>
+
+            <div class="field">
+                <label data-t="le">EMAIL <span style="opacity:.55;font-style:italic;font-weight:400" data-t="opt">(opcional)</span></label>
+                <input type="email" id="email" placeholder="para enviarte confirmación" autocomplete="email">
+            </div>
+
+            <div class="row-2">
+                <div class="field">
+                    <label data-t="ld">FECHA *</label>
+                    <input type="date" id="date" required>
+                </div>
+                <div class="field">
+                    <label data-t="lt">HORA *</label>
+                    <select id="time" required>
+                        <option value="" data-t="sel">Seleccionar</option>
+                        <optgroup label="— Mañana —">
+                            <option value="09:00">09:00</option>
+                            <option value="09:30">09:30</option>
+                            <option value="10:00">10:00</option>
+                            <option value="10:30">10:30</option>
+                            <option value="11:00">11:00</option>
+                            <option value="11:30">11:30</option>
+                        </optgroup>
+                        <optgroup label="— Mediodía —">
+                            <option value="12:00">12:00</option>
+                            <option value="12:30">12:30</option>
+                            <option value="13:00">13:00</option>
+                            <option value="13:30">13:30</option>
+                            <option value="14:00">14:00</option>
+                            <option value="14:30">14:30</option>
+                            <option value="15:00">15:00</option>
+                            <option value="15:30">15:30</option>
+                        </optgroup>
+                        <optgroup label="— Tarde —">
+                            <option value="16:00">16:00</option>
+                            <option value="16:30">16:30</option>
+                            <option value="17:00">17:00</option>
+                            <option value="17:30">17:30</option>
+                            <option value="18:00">18:00</option>
+                            <option value="18:30">18:30</option>
+                            <option value="19:00">19:00</option>
+                            <option value="19:30">19:30</option>
+                        </optgroup>
+                        <optgroup label="— Noche —">
+                            <option value="20:00">20:00</option>
+                            <option value="20:30">20:30</option>
+                            <option value="21:00">21:00</option>
+                            <option value="21:30">21:30</option>
+                            <option value="22:00">22:00</option>
+                            <option value="22:30">22:30</option>
+                            <option value="23:00">23:00</option>
+                            <option value="23:30">23:30</option>
+                        </optgroup>
+                        <optgroup label="— Madrugada —">
+                            <option value="00:00">00:00</option>
+                            <option value="00:30">00:30</option>
+                            <option value="01:00">01:00</option>
+                            <option value="01:30">01:30</option>
+                            <option value="02:00">02:00</option>
+                            <option value="02:30">02:30</option>
+                            <option value="03:00">03:00</option>
+                        </optgroup>
+                    </select>
+                </div>
+            </div>
+
+            <div class="field">
+                <label data-t="lg">COMENSALES *</label>
+                <input type="number" id="guests" min="1" max="50" placeholder="Número de personas" required oninput="checkCapacity()">
+                <p class="hint" data-t="gh">Máximo 50 personas. Para eventos, llámanos.</p>
+            </div>
+
+            <div class="warn-capacity" id="warn-cap" data-t="wc">⚠️ Aforo limitado para ese horario. Por favor elige otra hora o llámanos.</div>
+
+            <div class="field">
+                <label data-t="lno">NOTAS <span style="opacity:.55;font-style:italic;font-weight:400" data-t="opt">(opcional)</span></label>
+                <textarea id="notes" placeholder="Alergias, ocasión especial, preferencia de mesa…"></textarea>
+            </div>
+
+            <div class="rgpd">
+                <input type="checkbox" id="rgpd" required>
+                <span data-t="rg">He leído y acepto la <a href="/privacidad" target="_blank">política de privacidad</a> y el tratamiento de mis datos. *</span>
+            </div>
+
+            <button class="btn-submit" id="btn-sub" onclick="enviar()">
+                <span data-t="bs">Solicitar reserva</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="success" id="success">
+        <div class="success-icon">✓</div>
+        <h2 data-t="sh">¡Reserva recibida!</h2>
+        <p><span data-t="sp">Gracias,</span> <strong id="sname"></strong>. <span data-t="sp2">Nos pondremos en contacto para confirmar.</span></p>
+        <div class="success-detail" id="sdetail"></div>
+        <button class="btn-new" onclick="resetForm()"><span data-t="bn">Hacer otra reserva</span></button>
+    </div>
+</div>
+
+<section class="location">
+    <div class="loc-inner">
+        <p class="loc-label" data-t="ll">📍 Dónde estamos</p>
+        <p class="loc-address">Carrer de Tarragona, 105</p>
+        <p class="loc-city">Sants-Montjuïc · 08014 Barcelona</p>
+        <a class="loc-link" href="https://www.google.com/maps/search/?api=1&query=Carrer+de+Tarragona+105+Barcelona" target="_blank" rel="noopener"><span data-t="ml">📍 Ver en Google Maps →</span></a>
+        <div class="loc-map"><iframe src="https://maps.google.com/maps?q=Carrer+de+Tarragona,+105,+Barcelona&output=embed&hl=es" width="100%" height="220" style="border:0" allowfullscreen="" loading="lazy"></iframe></div>
+    </div>
+</section>
+
+<div class="toast" id="toast"></div>
+
+<footer class="footer">
+    <div class="footer-tel"><span data-t="fc">¿Grupo grande o evento? Llámanos al</span> <a href="tel:+34636360655">636 360 655</a></div>
+    <div class="socials">
+        <a href="https://instagram.com/otitanuz_bar" target="_blank"><span class="sico ig">📸</span> Instagram</a>
+        <a href="https://tiktok.com/@otitanuz_bar" target="_blank"><span class="sico tt">🎵</span> TikTok</a>
+        <a href="https://grupokenkim.pages.dev" target="_blank"><span class="sico web">🌐</span> Web</a>
+    </div>
+</footer>
+
+<script>
+/* ── CONFIG ── */
+var CLOSED_WEEKDAYS = [];   /* 0=Dom 1=Lun … 6=Sáb  ej: [1] cierra lunes */
+var MAX_GUESTS      = 100;  /* aforo máximo por turno */
+var RESTO           = 'Mira Miro';
+
+/* ── SUPABASE + EMAILJS ── */
+var db   = supabase.createClient('https://axqptiwackqbtkqpylzm.supabase.co','sb_publishable_JqZlwNT9tHPPKsIYDGurQQ_JQZeGoLd');
+var EJS  = { pub:'HFehV9yfugqgpbr5M', svc:'service_2p4kohv', tpl:'template_2cqbwfi' };
+emailjs.init(EJS.pub);
+
+/* ── DATE MIN ── */
+document.getElementById('date').min = new Date().toISOString().split('T')[0];
+
+/* Flatpickr: neon calendar on desktop, native picker on mobile */
+var closedDates = [];
+var fp = flatpickr('#date', {
+    locale: 'es',
+    minDate: 'today',
+    dateFormat: 'Y-m-d',
+    disableMobile: false,
+    disable: [function(date) {
+        var ds = date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0');
+        var cd = Array.isArray(closedDates) ? closedDates : [];
+        return CLOSED_WEEKDAYS.indexOf(date.getDay()) > -1 || cd.indexOf(ds) > -1;
+    }]
+});
+
+/* ── CLOSED DATES ── */
+db.from('closed_dates').select('date').then(function(r){ if(!r.error&&r.data) closedDates=r.data.map(function(x){return x.date;}); });
+
+/* ── TRANSLATIONS ── */
+var lang = 'es';
+var T = {
+    es:{ back:'Todos los restaurantes', sub:'Reserve su mesa en segundos', title:'Solicitar reserva', ln:'NOMBRE *', lp:'TELÉFONO *', le:'EMAIL', opt:'(opcional)', ld:'FECHA *', lt:'HORA *', lg:'COMENSALES *', gh:'Máximo 50 personas. Para eventos, llámanos.', lno:'NOTAS', rg:'He leído y acepto la <a href="/privacidad" target="_blank">política de privacidad</a> y el tratamiento de mis datos. *', bs:'Solicitar reserva', sh:'¡Reserva recibida!', sp:'Gracias,', sp2:'Nos pondremos en contacto para confirmar.', bn:'Hacer otra reserva', ll:'📍 Dónde estamos', ml:'📍 Ver en Google Maps →', fc:'¿Grupo grande o evento? Llámanos al', sel:'Seleccionar', wc:'⚠️ Aforo limitado para ese horario. Por favor elige otra hora o llámanos.' },
+    en:{ back:'All restaurants', sub:'Book your table in seconds', title:'Book a table', ln:'NAME *', lp:'PHONE *', le:'EMAIL', opt:'(optional)', ld:'DATE *', lt:'TIME *', lg:'GUESTS *', gh:'Max 50 people. For events, call us.', lno:'NOTES', rg:'I have read and accept the <a href="/privacidad" target="_blank">privacy policy</a> and the processing of my data. *', bs:'Book now', sh:'Booking received!', sp:'Thank you,', sp2:'We will contact you to confirm.', bn:'Make another booking', ll:'📍 Where we are', ml:'📍 View on Google Maps →', fc:'Large group or event? Call us at', sel:'Select', wc:'⚠️ Limited capacity for that time slot. Please choose another time.' }
+};
+function applyLang(l){
+    lang=l; document.getElementById('lang-btn').textContent=l==='es'?'🇬🇧 EN':'🇪🇸 ES';
+    document.querySelectorAll('[data-t]').forEach(function(el){ var k=el.getAttribute('data-t'); if(T[l][k]!==undefined) el.innerHTML=T[l][k]; });
+    document.getElementById('date').placeholder=l==='es'?'dd/mm/aaaa':'dd/mm/yyyy';
+}
+function toggleLang(){ var nl=lang==='es'?'en':'es'; applyLang(nl); if(fp) fp.set('locale', nl==='es'?flatpickr.l10ns.es:flatpickr.l10ns.default); }
+
+/* ── CAPACITY CHECK ── */
+async function checkCapacity(){
+    if(!MAX_GUESTS) return;
+    var d=document.getElementById('date').value, t=document.getElementById('time').value, g=parseInt(document.getElementById('guests').value)||0;
+    if(!d||!t||!g){ document.getElementById('warn-cap').style.display='none'; return; }
+    var r=await db.from('reservations').select('guests').eq('date',d).eq('time',t).in('status',['pendiente','confirmada']);
+    var total=(r.data||[]).reduce(function(s,x){return s+x.guests;},0);
+    document.getElementById('warn-cap').style.display=(total+g>MAX_GUESTS)?'block':'none';
+}
+
+/* ── SUBMIT ── */
+async function enviar(){
+    var name=document.getElementById('name').value.trim();
+    var phone=document.getElementById('phone').value.trim();
+    var email=document.getElementById('email').value.trim();
+    var date=document.getElementById('date').value;
+    var time=document.getElementById('time').value;
+    var guests=document.getElementById('guests').value;
+    var notes=document.getElementById('notes').value.trim();
+    var rgpd=document.getElementById('rgpd').checked;
+
+    var err = lang==='es'
+        ? { fields:'Por favor rellena todos los campos obligatorios.', rgpd:'Debes aceptar la política de privacidad.', guests:'Entre 1 y 50 personas.', closed:'Lo sentimos, ese día está cerrado.', full:'Sin aforo disponible para ese horario.', error:'Error al enviar. Inténtalo de nuevo.' }
+        : { fields:'Please fill in all required fields.', rgpd:'You must accept the privacy policy.', guests:'Between 1 and 50 guests.', closed:'Sorry, that day is closed.', full:'No availability for that time slot.', error:'Error sending. Please try again.' };
+
+    if(!name||!phone||!date||!time||!guests){ toast(err.fields); return; }
+    if(!rgpd){ toast(err.rgpd); return; }
+    var gn=parseInt(guests);
+    if(gn<1||gn>50){ toast(err.guests); return; }
+
+    /* Closed day check */
+    if(closedDates.indexOf(date)>-1){ toast(err.closed); return; }
+    var dow=new Date(date+'T12:00').getDay();
+    if(CLOSED_WEEKDAYS.indexOf(dow)>-1){ toast(err.closed); return; }
+
+    /* Capacity check */
+    if(MAX_GUESTS){
+        var r2=await db.from('reservations').select('guests').eq('date',date).eq('time',time).in('status',['pendiente','confirmada']);
+        var total=(r2.data||[]).reduce(function(s,x){return s+x.guests;},0);
+        if(total+gn>MAX_GUESTS){ toast(err.full); return; }
+    }
+
+    var btn=document.getElementById('btn-sub');
+    btn.disabled=true; btn.querySelector('span').textContent=lang==='es'?'Enviando…':'Sending…';
+
+    var ins=await db.from('reservations').insert([{name:name,phone:phone,email:email,date:date,time:time,guests:gn,notes:notes,status:'pendiente',restaurant:RESTO}]);
+    if(ins.error){ toast(err.error); btn.disabled=false; btn.querySelector('span').textContent=T[lang]['bs']; return; }
+
+    var df=new Date(date+'T12:00').toLocaleDateString(lang==='es'?'es-ES':'en-GB',{weekday:'long',day:'numeric',month:'long'});
+    emailjs.send(EJS.svc,EJS.tpl,{restaurant_name:RESTO,from_name:name,phone:phone,client_email:email||'No indicado',date:df,time:time,guests:gn,notes:notes||'Ninguna'}).catch(function(){});
+
+    document.getElementById('form-wrap').style.display='none';
+    document.getElementById('success').style.display='block';
+    document.getElementById('sname').textContent=name.split(' ')[0];
+    document.getElementById('sdetail').innerHTML='📅 '+df.charAt(0).toUpperCase()+df.slice(1)+' · '+time+'<br>👥 '+gn+(gn===1?(lang==='es'?' persona':' person'):(lang==='es'?' personas':' people'))+(notes?'<br>📝 '+notes:'');
+}
+
+function resetForm(){
+    document.getElementById('form-wrap').style.display='block';
+    document.getElementById('success').style.display='none';
+    document.getElementById('btn-sub').disabled=false;
+    document.getElementById('btn-sub').querySelector('span').textContent=T[lang]['bs'];
+    document.getElementById('warn-cap').style.display='none';
+    ['name','phone','email','time','guests','notes'].forEach(function(id){ document.getElementById(id).value=''; });
+    if(fp) fp.clear();
+    document.getElementById('rgpd').checked=false;
+}
+
+function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'; setTimeout(function(){ t.style.display='none'; },3500); }
+</script>
+</body>
+</html>
