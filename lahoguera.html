@@ -468,6 +468,7 @@ async function enviar(){
 
     var df=new Date(date+'T12:00').toLocaleDateString(lang==='es'?'es-ES':'en-GB',{weekday:'long',day:'numeric',month:'long'});
     emailjs.send(EJS.svc,EJS.tpl,{restaurant_name:RESTO,from_name:name,phone:phone,client_email:email||'No indicado',date:df,time:time,guests:gn,notes:notes||'Ninguna'}).catch(function(){});
+    sendTelegram(name, phone, email, date, time, gn, notes, RESTO);
 
     document.getElementById('form-wrap').style.display='none';
     document.getElementById('success').style.display='block';
