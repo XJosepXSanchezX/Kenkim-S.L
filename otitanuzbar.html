@@ -487,24 +487,15 @@ function resetForm(){
 }
 
 
-    /* ── TELEGRAM NOTIFICACIÓN ── */
+    /* ── TELEGRAM NOTIFICACIÓN via Supabase Edge Function ── */
     function sendTelegram(name, phone, email, date, time, guests, notes, resto) {
-        var df = new Date(date + 'T12:00').toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
-        var msg = '🍽 *Nueva reserva — ' + resto + '*\n\n'
-            + '👤 ' + name + '\n'
-            + '📞 ' + phone + (email ? '\n✉️ ' + email : '') + '\n'
-            + '📅 ' + df.charAt(0).toUpperCase() + df.slice(1) + ' a las *' + time + '*\n'
-            + '👥 ' + guests + (guests == 1 ? ' persona' : ' personas')
-            + (notes ? '\n📝 ' + notes : '') + '\n\n'
-            + '🔗 grupokenkim.pages.dev/admin';
-
-        fetch('https://api.telegram.org/bot8186995124:AAHE5gJD7C7VyK3LAiozgq2iKxToasg8neU/sendMessage', {
+        fetch('https://axqptiwackqbtkqpylzm.supabase.co/functions/v1/notify-telegram', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                chat_id: '8964243397',
-                text: msg,
-                parse_mode: 'Markdown'
+                name: name, phone: phone, email: email,
+                date: date, time: time, guests: guests,
+                notes: notes, restaurant: resto
             })
         }).catch(function(){});
     }
