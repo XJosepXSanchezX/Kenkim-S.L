@@ -463,11 +463,13 @@ async function enviar(){
     var btn=document.getElementById('btn-sub');
     btn.disabled=true; btn.querySelector('span').textContent=lang==='es'?'Enviando…':'Sending…';
 
-    var ins=await db.from('reservations').insert([{name:name,phone:phone,email:email,date:date,time:time,guests:gn,notes:notes,status:'pendiente',restaurant:RESTO}]);
+    var ins=await db.from('reservations').insert([{name:name,phone:phone,email:email,date:date,time:time,guests:gn,notes:notes,status:'pendiente',restaurant:RESTO}]).select();
     if(ins.error){ toast(err.error); btn.disabled=false; btn.querySelector('span').textContent=T[lang]['bs']; return; }
 
+    var reservationId = (ins.data && ins.data[0]) ? ins.data[0].id : '';
     var df=new Date(date+'T12:00').toLocaleDateString(lang==='es'?'es-ES':'en-GB',{weekday:'long',day:'numeric',month:'long'});
     emailjs.send(EJS.svc,EJS.tpl,{restaurant_name:RESTO,from_name:name,phone:phone,client_email:email||'No indicado',date:df,time:time,guests:gn,notes:notes||'Ninguna'}).catch(function(){});
+    sendTelegram(name, phone, email, date, time, gn, notes, RESTO, reservationId);
 
     document.getElementById('form-wrap').style.display='none';
     document.getElementById('success').style.display='block';
@@ -488,14 +490,15 @@ function resetForm(){
 
 
     /* ── TELEGRAM NOTIFICACIÓN via Supabase Edge Function ── */
-    function sendTelegram(name, phone, email, date, time, guests, notes, resto) {
+    function sendTelegram(name, phone, email, date, time, guests, notes, resto, reservationId) {
         fetch('https://axqptiwackqbtkqpylzm.supabase.co/functions/v1/notify-telegram', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 name: name, phone: phone, email: email,
                 date: date, time: time, guests: guests,
-                notes: notes, restaurant: resto
+                notes: notes, restaurant: resto,
+                reservation_id: reservationId || ''
             })
         }).catch(function(){});
     }
