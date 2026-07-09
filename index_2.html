@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grupo Otitanuz — Reservas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --midnight: #1A1F2E;
+            --cream: #F7F5F0;
+            --text: #2C2C2C;
+            --muted: #888;
+            --border: #E2DDD6;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: var(--midnight); color: var(--cream); min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* HEADER */
+        .hero {
+            text-align: center;
+            padding: 4rem 1.5rem 3rem;
+            position: relative;
+        }
+        .hero::after {
+            content: '';
+            display: block;
+            width: 60px; height: 1px;
+            background: rgba(255,255,255,0.2);
+            margin: 2rem auto 0;
+        }
+        .hero-eyebrow {
+            font-size: 0.65rem;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 1rem;
+        }
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 400;
+            line-height: 1.05;
+            letter-spacing: -0.01em;
+        }
+        .hero h1 em {
+            font-style: italic;
+            color: rgba(255,255,255,0.5);
+        }
+        .hero-sub {
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            font-weight: 300;
+            color: rgba(255,255,255,0.4);
+            letter-spacing: 0.05em;
+        }
+
+        /* CARDS */
+        .cards-container {
+            flex: 1;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+            width: 100%;
+        }
+        .cards-label {
+            font-size: 0.65rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.3);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.25rem;
+        }
+        .card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 2rem 1.75rem;
+            text-decoration: none;
+            color: var(--cream);
+            transition: background 0.2s, transform 0.2s, border-color 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--card-accent);
+            opacity: 0.8;
+        }
+        .card:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.15);
+            transform: translateY(-3px);
+        }
+        .card-icon { font-size: 1.75rem; }
+        .card-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 400;
+            line-height: 1.1;
+        }
+        .card-desc {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.4);
+            font-weight: 300;
+            line-height: 1.5;
+            flex: 1;
+        }
+        .card-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--card-accent);
+            margin-top: 0.5rem;
+            transition: gap 0.2s;
+        }
+        .card:hover .card-cta { gap: 0.7rem; }
+
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.07);
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.25);
+        }
+        .footer a { color: rgba(255,255,255,0.4); text-decoration: none; }
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .social-links a {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.35);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .social-links a:hover { color: rgba(255,255,255,0.7); }
+
+                
+        /* ══ MOBILE LANDING POLISH ══ */
+        @media (max-width: 640px) {
+            body { background: #0D0D1A; } /* dark bg on mobile too */
+            .hero         { padding: 3rem 1.25rem 2.25rem; }
+            .hero h1      { font-size: 2.4rem; }
+            .hero-sub     { font-size: .85rem; }
+            .cards-label  { font-size: .62rem; margin-bottom: 1.5rem; }
+            .cards-container { padding: 1.5rem 1rem 3rem; }
+            .cards-grid   { grid-template-columns: 1fr; gap: 1rem; }
+            .card         { padding: 1.5rem 1.25rem; border-radius: 12px; }
+            .card-icon    { font-size: 1.6rem; }
+            .card-name    { font-size: 1.25rem; }
+            .card-desc    { font-size: .82rem; }
+            .card-cta     { font-size: .78rem; }
+            .footer       { padding: 1.25rem 1rem; font-size: .75rem; }
+            .social-links { flex-direction: column; align-items: center; gap: .5rem; }
+        }
+        @media (max-width: 380px) {
+            .hero h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <p class="hero-eyebrow">Grupo Otitanuz</p>
+    <h1>Reserva tu<br><em>experiencia</em></h1>
+    <p class="hero-sub">Selecciona uno de nuestros locales</p>
+</div>
+
+<div class="cards-container">
+    <p class="cards-label">Nuestros restaurantes</p>
+    <div class="cards-grid">
+
+        <a class="card" href="/otitanuzbar" style="--card-accent: #C9995A">
+            <span class="card-icon">🥂</span>
+            <span class="card-name">Otitanuz Bar</span>
+            <span class="card-desc">Ambiente íntimo y cocktails de autor. La experiencia clásica de Otitanuz.</span>
+            <span class="card-cta">Reservar mesa →</span>
+        </a>
+
+        <a class="card" href="/lahoguera" style="--card-accent: #C94A1A">
+            <span class="card-icon">🔥</span>
+            <span class="card-name">La Hoguera</span>
+            <span class="card-desc">Cocina a la brasa y sabores intensos. Para los que buscan algo diferente.</span>
+            <span class="card-cta">Reservar mesa →</span>
+        </a>
+
+        <a class="card" href="/otitanuzbeach" style="--card-accent: #1A8FA0">
+            <span class="card-icon">🏖</span>
+            <span class="card-name">Otitanuz Beach</span>
+            <span class="card-desc">Gastronomía frente al mar. Vistas, brisa y cocina mediterránea.</span>
+            <span class="card-cta">Reservar mesa →</span>
+        </a>
+
+        <a class="card" href="/latavernaotitanuz" style="--card-accent: #E8C468">
+            <span class="card-icon">🍷</span>
+            <span class="card-name">La Taverna Otitanuz</span>
+            <span class="card-desc">Ambiente de taberna tradicional con un toque actual. Vinos y buena mesa.</span>
+            <span class="card-cta">Reservar mesa →</span>
+        </a>
+
+        <a class="card" href="/miramiro" style="--card-accent: #A855F7">
+            <span class="card-icon">✨</span>
+            <span class="card-name">Mira Miro</span>
+            <span class="card-desc">Una experiencia gastronómica diferente, con personalidad propia.</span>
+            <span class="card-cta">Reservar mesa →</span>
+        </a>
+
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="social-links">
+        <a href="https://instagram.com/otitanuz_bar" target="_blank">📸 Instagram</a>
+        <a href="https://tiktok.com/@otitanuz_bar" target="_blank">🎵 TikTok</a>
+        <a href="tel:+34636360655">📞 636 360 655</a>
+    </div>
+    © Grupo Otitanuz
+</footer>
+
+</body>
+</html>
