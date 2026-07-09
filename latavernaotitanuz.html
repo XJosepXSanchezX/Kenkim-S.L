@@ -120,38 +120,63 @@
 
         /* ── MOBILE ── */
         @media (max-width: 600px) {
-            .header       { padding:0 1rem 2.25rem; }
-            .back-link    { font-size:.75rem; padding:.65rem 1rem; }
-            .lang-btn     { top:.8rem; right:.8rem; font-size:.7rem; padding:.35rem .6rem; }
-            .header h1    { font-size:2rem; margin-top:1.25rem; }
-            .eyebrow      { padding-top:1.5rem; font-size:.65rem; }
-            .divider      { margin:.9rem auto; }
-            .sub-text     { font-size:.86rem; }
-            .container    { padding:1.75rem 1rem 3rem; }
-            .form-title   { font-size:1.08rem; margin-bottom:1.35rem; }
-            .form-grid    { gap:1.1rem; }
-            .row-2        { grid-template-columns:1fr; gap:.9rem; }
-            .field label  { font-size:.7rem; margin-bottom:.42rem; }
+            /* ── HEADER ── */
+            .header         { padding: 0 0 2rem; }
+            .back-link      { padding: .75rem 1rem; font-size: .78rem; width: 75%; }
+            .lang-btn       { position: absolute; top: .72rem; right: .85rem; font-size: .7rem; padding: .35rem .6rem; }
+            .eyebrow        { padding-top: 1.6rem; font-size: .65rem; margin-bottom: .7rem; }
+            .header h1      { font-size: 1.9rem; padding: 0 1rem; }
+            .divider        { margin: .85rem auto; }
+            .sub-text       { font-size: .84rem; padding: 0 1rem; }
+
+            /* ── FORM ── */
+            .container      { padding: 1.5rem 1rem 2.5rem; }
+            .form-title     { font-size: 1rem; margin-bottom: 1.25rem; }
+            .form-grid      { gap: 1rem; }
+            .row-2          { grid-template-columns: 1fr; gap: .85rem; }
+            .field label    { font-size: .68rem; letter-spacing: .12em; margin-bottom: .38rem; }
             .field input,
             .field select,
-            .field textarea { font-size:1rem; padding:.82rem .95rem; min-height:52px; border-radius:8px; }
-            .field textarea { min-height:88px; }
-            .hint         { font-size:.76rem; }
-            .rgpd span    { font-size:.8rem; }
-            .rgpd input[type=checkbox] { width:20px; height:20px; }
-            .btn-submit   { min-height:56px; font-size:.88rem; border-radius:10px; margin-top:.75rem; }
-            .btn-new      { min-height:50px; font-size:.78rem; }
-            .success      { padding:2.25rem 1.1rem; border-radius:12px; }
-            .loc-inner    { padding:1.6rem 1rem; }
-            .loc-map iframe { height:190px; }
-            .loc-link     { font-size:.8rem; min-height:46px; }
-            .footer       { padding:1.4rem 1rem; }
-            .footer-tel   { font-size:.8rem; }
-            .socials      { gap:.75rem; }
-            .toast        { font-size:.82rem; }
+            .field textarea { font-size: 1rem; padding: .85rem .95rem; min-height: 52px; border-radius: 8px; }
+            .field textarea  { min-height: 85px; }
+            .hint           { font-size: .75rem; margin-top: .3rem; }
+            .rgpd           { gap: .6rem; }
+            .rgpd span      { font-size: .8rem; }
+            .rgpd input[type=checkbox] { width: 20px; height: 20px; margin-top: 1px; flex-shrink: 0; }
+            .btn-submit     { min-height: 54px; font-size: .88rem; border-radius: 10px; margin-top: .85rem; }
+            .btn-new        { min-height: 48px; }
+            .warn-capacity  { font-size: .8rem; }
+
+            /* ── SUCCESS ── */
+            .success        { padding: 2rem 1.1rem; }
+            .success h2     { font-size: 1.3rem; }
+            .success p      { font-size: .84rem; }
+            .success-detail { font-size: .84rem; }
+
+            /* ── LOCATION ── */
+            .loc-inner      { padding: 1.5rem 1rem; }
+            .loc-label      { font-size: .65rem; }
+            .loc-address    { font-size: 1rem; }
+            .loc-city       { font-size: .82rem; }
+            .loc-link       { min-height: 46px; font-size: .8rem; border-radius: 8px; }
+            .loc-map iframe { height: 185px; border-radius: 8px; }
+
+            /* ── FOOTER ── */
+            .footer         { padding: 1.4rem 1rem; }
+            .footer-tel     { font-size: .8rem; margin-bottom: .75rem; }
+            .socials        { gap: .65rem; flex-wrap: wrap; justify-content: center; }
+            .socials a      { font-size: .78rem; }
+            .sico           { width: 26px; height: 26px; }
+
+            /* ── TOAST ── */
+            .toast          { font-size: .82rem; left: 1rem; right: 1rem; transform: none; width: auto; }
         }
-        @media (max-width: 360px) {
-            .header h1 { font-size:1.8rem; }
+
+        @media (max-width: 380px) {
+            .header h1      { font-size: 1.65rem; }
+            .back-link      { font-size: .72rem; }
+            .btn-submit     { font-size: .82rem; }
+        }
             .btn-submit { font-size:.82rem; }
         }
 
@@ -233,7 +258,7 @@
         <a class="back-link" href="/">← <span data-t="back">Todos los restaurantes</span></a>
         <button class="lang-btn" id="lang-btn" onclick="toggleLang()">🇬🇧 EN</button>
     </div>
-    <p class="eyebrow">🍷 Grupo KenKim</p>
+    <p class="eyebrow">🍷 Grupo Otitanuz</p>
     <h1>La Taverna <em>Otitanuz</em></h1>
     <div class="divider"></div>
     <p class="sub-text" data-t="sub">Reserve su mesa en segundos</p>
